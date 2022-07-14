@@ -1,4 +1,4 @@
-# thesis
+# Thesis
 SSL Models for Spoken Language Identification and Segmentation
 
 Thesis Stages Include

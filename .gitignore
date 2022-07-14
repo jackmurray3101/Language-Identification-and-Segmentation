@@ -3,3 +3,13 @@ benchmark/FeatureFiles/
 benchmark/test_data/
 speechbrain
 other/en
+datasets/**/*.wav
+datasets/**/*.mp3
+datasets/**/*.mp4
+datasets/**/*.flac
+datasets/**/*.m4a
+datasets/**/*.wma
+
+
+
+

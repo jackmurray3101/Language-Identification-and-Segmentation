@@ -1,0 +1,1 @@
+Min length of waveforms in en, de and zh is 27360 samples = 1.71 secondsMax length of waveforms in en, de and zh is 320000 samples = 20 seconds

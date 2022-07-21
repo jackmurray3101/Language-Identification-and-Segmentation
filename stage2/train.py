@@ -16,7 +16,7 @@ if __name__ == "__main__":
   print(torchaudio.__version__)
   print(device)
   
-    # parameters
+  # parameters
   sr = 16000        # Hz
   max_length = 6    # seconds 
   cwd = os.getcwd()
@@ -43,7 +43,7 @@ if __name__ == "__main__":
   optimizer = optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
   scheduler = ReduceLROnPlateau(optimizer, 'min', patience = 5)
   epochs = 5
-  batch_size = 4
+  batch_size = 2
   num_languages = 3
   
   trainloader = torch.utils.data.DataLoader(data, batch_size=batch_size, shuffle=True, num_workers = 5)
@@ -84,9 +84,9 @@ if __name__ == "__main__":
     
     for batch in trainloader:
       signals, mask, labels = batch
-      #signals = signals.to(device).contiguous()
-      #mask = mask.to(device).contiguous()
-      #label = labels.to(device).contiguous()
+      signals = signals.to(device).contiguous()
+      mask = mask.to(device).contiguous()
+      label = labels.to(device).contiguous()
       
       inputs = {}
       inputs['input_values'] = signals.float()

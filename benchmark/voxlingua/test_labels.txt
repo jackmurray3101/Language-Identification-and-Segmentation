@@ -1,0 +1,3 @@
+file1.wav en
+file2.wav de
+file3.wav es

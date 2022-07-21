@@ -1,0 +1,21 @@
+import os
+
+dirs = [
+  "voxlingua107_train",
+  "voxlingua107_val",
+  "voxlingua107_test",
+]
+
+languages = ['en', 'de', 'zh']
+
+cwd = os.getcwd()
+
+for folder in dirs:
+  folder_path = os.path.join(cwd, folder)
+  labels_path = os.path.join(folder_path, "labels.txt")
+  f = open(labels_path, "w")
+  for language in languages:
+    files = os.listdir(os.path.join(folder_path, language))
+    for file in files:
+      f.write(f"{file} {language}\n")
+  f.close()

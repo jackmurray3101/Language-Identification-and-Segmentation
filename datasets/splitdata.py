@@ -10,7 +10,22 @@ train_size = 300
 val_size = 40
 test_size = 40
 
-input_sets = ['en', 'de', 'zh']
+input_sets = [
+  'da',
+  'de',
+  'el',
+  'en',
+  'es',
+  'fr',
+  'it',
+  'ja',
+  'ko',
+  'nl',
+  'no',
+  'pt',
+  'sv',
+  'zh'
+]
 
 original_data_dir = 'voxlingua107'
 train_data_dir = 'voxlingua107_train'

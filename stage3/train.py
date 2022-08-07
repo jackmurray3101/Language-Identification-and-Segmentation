@@ -2,13 +2,13 @@ import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torchaudio
 from transformers import Wav2Vec2ForSequenceClassification
 from torchvision import transforms
 import audio_transforms as T
 from data import VoxLingua107
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import numpy as np
+import json
 
 def validate_network(model, valloader):
   print("Validating")
@@ -39,17 +39,27 @@ def validate_network(model, valloader):
 if __name__ == "__main__":
   device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
   print(torch.__version__)
-  print(torchaudio.__version__)
   print(device)
-  
+
+  # load parameters
+  config_file = open('config.json')
+  config = json.load(config_file)
+
+
   # parameters
-  sr = 16000        # Hz
-  max_length = 6    # seconds 
+  sr = config['sampling_rate']        
+  max_length = config['sample_duration']
   cwd = os.getcwd()
+
   train_dir = os.path.join(cwd, '..', 'datasets', 'voxlingua107_train')
   val_dir = os.path.join(cwd, '..', 'datasets', 'voxlingua107_val')
   test_dir = os.path.join(cwd, '..', 'datasets', 'voxlingua107_test')
   
+  epochs = config['epochs']
+  batch_size = config['batch_size']
+  num_languages = config["num_languages"]
+
+
   # Data Augmentation
   random_transforms = transforms.Compose([
     T.Extractor("superb/wav2vec2-base-superb-sid", max_length=max_length, sampling_rate=sr)
@@ -60,24 +70,23 @@ if __name__ == "__main__":
   test_data = VoxLingua107(test_dir, 'labels.txt', sr, max_length, balance=True, transform=random_transforms)
   model = Wav2Vec2ForSequenceClassification.from_pretrained("superb/wav2vec2-base-superb-sid")
 
+  # Define training parameters  
+  loss_func = nn.CrossEntropyLoss()
+  optimizer = optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
+  scheduler = ReduceLROnPlateau(optimizer, 'min', patience = 5)
+
+
   multiGPU = False
   if torch.cuda.device_count() > 1:
     print(f'{torch.cuda.device_count()} GPUs Used')
     model = nn.DataParallel(model)
     multiGPU = True
     
-  model.to(device)
 
-  # Define training parameters  
-  loss_func = nn.CrossEntropyLoss()
-  optimizer = optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
-  scheduler = ReduceLROnPlateau(optimizer, 'min', patience = 5)
-  epochs = 5
-  batch_size = 2
-  num_languages = 3
   
-  trainloader = torch.utils.data.DataLoader(train_data, batch_size=batch_size, shuffle=True, num_workers = 4)
-  valloader = torch.utils.data.DataLoader(val_data, batch_size=batch_size, shuffle=True, num_workers = 2)
+  # TODO FIX THE NUM_WORKERS
+  trainloader = torch.utils.data.DataLoader(train_data, batch_size=batch_size, shuffle=True)
+  valloader = torch.utils.data.DataLoader(val_data, batch_size=batch_size, shuffle=True)
   # testloader = torch.utils.data.DataLoader(test_data, batch_size=batch_size, shuffle=True, num_workers = 2)
   
   if (multiGPU):
@@ -109,12 +118,12 @@ if __name__ == "__main__":
   
   print("Start training...")
   model.train()
+  model.to(device)
   for epoch in range(epochs):
     total_loss = 0
     total_signals = 0
     total_correct = 0
     
-    batch_num = 0
     for batch in trainloader:
       signals, mask, labels = batch
       signals = signals.to(device).contiguous()
@@ -136,11 +145,7 @@ if __name__ == "__main__":
       model_accuracy = total_correct / total_signals * 100
       print(f'epoch {epoch}, loss: {loss.item():.2f}, train {model_accuracy:.2f}%')
       
-      batch_num += 1
-      if (batch_num % 4 == 0):
-        validate_network(model, valloader)
-      
-      
     print('Epoch completed!')
     print(f'epoch {epoch}, average_loss_per_batch: {total_loss/len(trainloader):2f}, train {model_accuracy:.2f}%')
+    validate_network(model, valloader)
     scheduler.step(total_loss/len(trainloader))

@@ -6,7 +6,22 @@ dirs = [
   "voxlingua107_test",
 ]
 
-languages = ['en', 'de', 'zh']
+languages = [
+  'da',
+  'de',
+  'el',
+  'en',
+  'es',
+  'fr',
+  'it',
+  'ja',
+  'ko',
+  'nl',
+  'no',
+  'pt',
+  'sv',
+  'zh'
+]
 
 cwd = os.getcwd()
 

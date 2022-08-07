@@ -16,9 +16,20 @@ class VoxLingua107(Dataset):
     self.sr = sampling_rate
     
     self.labels_map = {
-      'de': 0,
-      'en': 1,
-      'zh': 2
+      'da': 0,
+      'de': 1,
+      'el': 2,
+      'en': 3,
+      'es': 4,
+      'fr': 5,
+      'it': 6,
+      'ja': 7,
+      'ko': 8,
+      'nl': 9,
+      'no': 10,
+      'pt': 11,
+      'sv': 12,
+      'zh': 13
     }
     
     # the maximum length of an audio file from the dataset (number of samples, e.g. if max was 3s @ 16kHz, ml = 48000)

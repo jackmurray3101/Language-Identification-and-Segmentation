@@ -7,7 +7,7 @@
 #PBS -l jobfs=8GB
 #PBS -l walltime=00:30:00
 #PBS -l wd
-#PBS -l storage=gdata/wa66/jm2369
+#PBS -l storage=gdata/wa66
  
 # Load module, always specify version number.
 module load python3/3.9.2

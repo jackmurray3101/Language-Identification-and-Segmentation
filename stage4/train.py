@@ -51,9 +51,9 @@ if __name__ == "__main__":
   max_length = config['sample_duration']
   cwd = os.getcwd()
 
-  train_dir = '/g/data/wa66/jm2369/datasets/voxlingua/voxlingua107_train'
-  val_dir = '/g/data/wa66/jm2369/datasets/voxlingua/voxlingua107_val'
-  test_dir = '/g/data/wa66/jm2369/datasets/voxlingua/voxlingua107_test'
+  train_dir = '/g/data/wa66/jm2369/datasets/voxlingua107/voxlingua107_train'
+  val_dir = '/g/data/wa66/jm2369/datasets/voxlingua107/voxlingua107_val'
+  test_dir = '/g/data/wa66/jm2369/datasets/voxlingua107/voxlingua107_test'
   
   epochs = config['epochs']
   batch_size = config['batch_size']

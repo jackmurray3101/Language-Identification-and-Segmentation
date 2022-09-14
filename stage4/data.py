@@ -50,9 +50,6 @@ class VoxLingua107(Dataset):
     self.num_samples_per_language = {}
     
     self.transform = transform
-    # wav2vec 2.0 model
-    bundle = torchaudio.pipelines.WAV2VEC2_BASE
-    self.model =  model = bundle.get_model()  
     
     # labels file should be in format:
     # english_sample.wav en

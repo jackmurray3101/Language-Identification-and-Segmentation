@@ -5,6 +5,8 @@
   "epochs": 10,
   "batch_size": 10,
   "num_languages": 14,
+  "model_path": "/g/data/wa66/jm2369/downloaded_models/superb/wav2vec2-base-sid-model",
+  "extractor_path": "/g/data/wa66/jm2369/downloaded_models/superb/wav2vec2-base-sid-feature-extractor",
   "languages":
     [
       "da",

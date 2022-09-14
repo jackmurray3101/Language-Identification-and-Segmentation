@@ -10,8 +10,10 @@ speech2, _ = librosa.load("./mandarin.wav", sr=sampling_rate, mono=True)
 speech = [speech1, speech2]
 
 
-feature_extractor = Wav2Vec2FeatureExtractor.from_pretrained("superb/wav2vec2-base-superb-sid")
-model = Wav2Vec2ForSequenceClassification.from_pretrained("superb/wav2vec2-base-superb-sid")
+# feature_extractor = Wav2Vec2FeatureExtractor.from_pretrained("superb/wav2vec2-base-superb-sid")
+# model = Wav2Vec2ForSequenceClassification.from_pretrained("superb/wav2vec2-base-superb-sid")
+feature_extractor = Wav2Vec2FeatureExtractor.from_pretrained("../downloaded_models/superb/wav2vec2-base-sid-feature-extractor")
+model = Wav2Vec2ForSequenceClassification.from_pretrained("../downloaded_models/superb/wav2vec2-base-sid-model")
 print(model)
 
 # normalise inputs, pad or truncate, return attention vector

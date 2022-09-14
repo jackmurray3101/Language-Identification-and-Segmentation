@@ -57,18 +57,18 @@ if __name__ == "__main__":
   
   epochs = config['epochs']
   batch_size = config['batch_size']
-  num_languages = config["num_languages"]
+  num_languages = config['num_languages']
 
 
   # Data Augmentation
   random_transforms = transforms.Compose([
-    T.Extractor("superb/wav2vec2-base-superb-sid", max_length=max_length, sampling_rate=sr)
+    T.Extractor(config['extractor_path'], max_length=max_length, sampling_rate=sr)
   ])
   
   train_data = VoxLingua107(train_dir, 'labels.txt', sr, max_length, balance=True, transform=random_transforms)
   val_data = VoxLingua107(val_dir, 'labels.txt', sr, max_length, balance=True, transform=random_transforms)
   test_data = VoxLingua107(test_dir, 'labels.txt', sr, max_length, balance=True, transform=random_transforms)
-  model = Wav2Vec2ForSequenceClassification.from_pretrained("superb/wav2vec2-base-superb-sid")
+  model = Wav2Vec2ForSequenceClassification.from_pretrained(config['model_path'])
 
   # Define training parameters  
   loss_func = nn.CrossEntropyLoss()

@@ -30,9 +30,32 @@ def validate_network(model, valloader):
       total_val_signals += labels.size(0)
       total_val_correct += output.eq(labels).sum().item()
       i += 1
-      if (i == 5): break
   model_accuracy = total_val_correct / total_val_signals * 100
   print(", {0} validation accuracy {1:.2f}%".format(total_signals, model_accuracy))
+  model.train()
+
+def test_network(model, testloader):
+  print("Testing")
+  model.eval()
+  total_test_signals = 0
+  total_test_correct = 0
+  with torch.no_grad():
+    i = 0
+    for batch in testloader:
+      signals, mask, labels = batch
+      signals = signals.to(device).contiguous()
+      mask = mask.to(device).contiguous()
+      labels = labels.to(device).contiguous()
+      inputs = {}
+      inputs["input_values"] = signals.float()
+      inputs["attention_mask"] = mask.long()
+      predictions = model(**inputs).logits
+      output = predictions.argmax(dim=1)
+      total_test_signals += labels.size(0)
+      total_test_correct += output.eq(labels).sum().item()
+      i += 1
+  model_accuracy = total_test_correct / total_test_signals * 100
+  print(", {0} Test accuracy {1:.2f}%".format(total_signals, model_accuracy))
   model.train()
 
 
@@ -84,7 +107,7 @@ if __name__ == "__main__":
   # TODO FIX THE NUM_WORKERS
   trainloader = torch.utils.data.DataLoader(train_data, batch_size=batch_size, shuffle=True)
   valloader = torch.utils.data.DataLoader(val_data, batch_size=batch_size, shuffle=True)
-  # testloader = torch.utils.data.DataLoader(test_data, batch_size=batch_size, shuffle=True, num_workers = 2)
+  testloader = torch.utils.data.DataLoader(test_data, batch_size=batch_size, shuffle=True)
   
   if (multiGPU):
     # adjust final FC layer for LID
@@ -146,3 +169,6 @@ if __name__ == "__main__":
     print(f"epoch {epoch}, average_loss_per_batch: {total_loss/len(trainloader):2f}, train {model_accuracy:.2f}%")
     validate_network(model, valloader)
     scheduler.step(total_loss/len(trainloader))
+
+  print("Training Completed!")
+  test_network(model, testloader)

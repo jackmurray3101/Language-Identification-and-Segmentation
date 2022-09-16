@@ -23,8 +23,8 @@ def validate_network(model, valloader):
       mask = mask.to(device).contiguous()
       labels = labels.to(device).contiguous()
       inputs = {}
-      inputs['input_values'] = signals.float()
-      inputs['attention_mask'] = mask.long()
+      inputs["input_values"] = signals.float()
+      inputs["attention_mask"] = mask.long()
       predictions = model(**inputs).logits
       output = predictions.argmax(dim=1)
       total_val_signals += labels.size(0)
@@ -32,7 +32,7 @@ def validate_network(model, valloader):
       i += 1
       if (i == 5): break
   model_accuracy = total_val_correct / total_val_signals * 100
-  print(', {0} validation accuracy {1:.2f}%'.format(total_signals, model_accuracy))
+  print(", {0} validation accuracy {1:.2f}%".format(total_signals, model_accuracy))
   model.train()
 
 
@@ -42,43 +42,40 @@ if __name__ == "__main__":
   print(device)
 
   # load parameters
-  config_file = open('config.json')
+  config_file = open("config.json")
   config = json.load(config_file)
 
+  sr = config["sampling_rate"]        
+  max_length = config["sample_duration"]
 
-  # parameters
-  sr = config['sampling_rate']        
-  max_length = config['sample_duration']
-  cwd = os.getcwd()
-
-  train_dir = '/g/data/wa66/jm2369/datasets/voxlingua107_train'
-  val_dir = '/g/data/wa66/jm2369/datasets/voxlingua107_val'
-  test_dir = '/g/data/wa66/jm2369/datasets/voxlingua107_test'
+  train_dir = config["train_dir"]
+  val_dir = config["val_dir"]
+  test_dir = config["test_dir"]
   
-  epochs = config['epochs']
-  batch_size = config['batch_size']
-  num_languages = config['num_languages']
+  epochs = config["epochs"]
+  batch_size = config["batch_size"]
+  num_languages = config["num_languages"]
 
 
   # Data Augmentation
   random_transforms = transforms.Compose([
-    T.Extractor(config['extractor_path'], max_length=max_length, sampling_rate=sr)
+    T.Extractor(config["extractor_path"], max_length=max_length, sampling_rate=sr)
   ])
   
-  train_data = VoxLingua107(train_dir, 'labels.txt', sr, max_length, balance=True, transform=random_transforms)
-  val_data = VoxLingua107(val_dir, 'labels.txt', sr, max_length, balance=True, transform=random_transforms)
-  test_data = VoxLingua107(test_dir, 'labels.txt', sr, max_length, balance=True, transform=random_transforms)
-  model = Wav2Vec2ForSequenceClassification.from_pretrained(config['model_path'])
+  train_data = VoxLingua107(train_dir, "labels.txt", sr, max_length, balance=True, transform=random_transforms)
+  val_data = VoxLingua107(val_dir, "labels.txt", sr, max_length, balance=True, transform=random_transforms)
+  test_data = VoxLingua107(test_dir, "labels.txt", sr, max_length, balance=True, transform=random_transforms)
+  model = Wav2Vec2ForSequenceClassification.from_pretrained(config["model_path"])
 
   # Define training parameters  
   loss_func = nn.CrossEntropyLoss()
-  optimizer = optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
-  scheduler = ReduceLROnPlateau(optimizer, 'min', patience = 5)
+  optimizer = optim.Adam(model.parameters(), lr=config["learning_rate"], weight_decay=config["weight_decay"])
+  scheduler = ReduceLROnPlateau(optimizer, "min", patience=config["patience"])
 
 
   multiGPU = False
   if torch.cuda.device_count() > 1:
-    print(f'{torch.cuda.device_count()} GPUs Used')
+    print(f"{torch.cuda.device_count()} GPUs Used")
     model = nn.DataParallel(model)
     multiGPU = True
     
@@ -114,7 +111,7 @@ if __name__ == "__main__":
   
   model_parameters = filter(lambda p: p.requires_grad, model.parameters())
   params = sum([np.prod(p.size()) for p in model_parameters])
-  print('Trainable Parameters : ' + str(params))
+  print("Trainable Parameters : " + str(params))
   
   print("Start training...")
   model.train()
@@ -131,8 +128,8 @@ if __name__ == "__main__":
       labels = labels.to(device).contiguous()
       
       inputs = {}
-      inputs['input_values'] = signals.float()
-      inputs['attention_mask'] = mask.long()
+      inputs["input_values"] = signals.float()
+      inputs["attention_mask"] = mask.long()
       predictions = model(**inputs).logits
       loss = loss_func(predictions, labels)
       optimizer.zero_grad()
@@ -143,9 +140,9 @@ if __name__ == "__main__":
       total_signals += labels.size(0)
       total_correct += output.eq(labels).sum().item()
       model_accuracy = total_correct / total_signals * 100
-      print(f'epoch {epoch}, loss: {loss.item():.2f}, train {model_accuracy:.2f}%')
+      print(f"epoch {epoch}, loss: {loss.item():.2f}, train {model_accuracy:.2f}%")
       
-    print('Epoch completed!')
-    print(f'epoch {epoch}, average_loss_per_batch: {total_loss/len(trainloader):2f}, train {model_accuracy:.2f}%')
+    print("Epoch completed!")
+    print(f"epoch {epoch}, average_loss_per_batch: {total_loss/len(trainloader):2f}, train {model_accuracy:.2f}%")
     validate_network(model, valloader)
     scheduler.step(total_loss/len(trainloader))

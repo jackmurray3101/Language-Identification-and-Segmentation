@@ -41,7 +41,6 @@ def test_network(model, testloader, num_languages, languages):
   confusion_matrix.to(device).contiguous()
   with torch.no_grad():
     for batch in testloader:
-      print(confusion_matrix.numpy())
       signals, mask, labels = batch
       signals = signals.to(device).contiguous()
       mask = mask.to(device).contiguous()
@@ -53,10 +52,6 @@ def test_network(model, testloader, num_languages, languages):
       output = predictions.argmax(dim=1)
       total_test_signals += labels.size(0)
       total_test_correct += output.eq(labels).sum().item()
-      print("labels:")
-      print(labels)
-      print("outputs:")
-      print(output)
       for i in range (0, len(labels)):
         confusion_matrix[labels[i]][output[i]] += 1
 

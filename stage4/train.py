@@ -56,11 +56,12 @@ def test_network(model, testloader, num_languages, languages):
       print(labels)
       print("outputs:")
       print(output)
-      confusion_matrix[labels][output] += 1
+      for i in range (0, len(labels)):
+        confusion_matrix[labels[i]][output[i]] += 1
 
   print("  ".join(languages))
   print(confusion_matrix)
-  
+
   model_accuracy = (total_test_correct / total_test_signals) * 100
   print(", {0} Test accuracy {1:.2f}%".format(total_test_signals, model_accuracy))
   model.train()

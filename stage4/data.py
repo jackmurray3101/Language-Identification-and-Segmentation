@@ -91,7 +91,6 @@ class VoxLingua107(Dataset):
     
   def get_audio_sample_path(self, index):
     # audio_sample_path will be in format:
-    # /other_dirs/thesis/data/voxlingua107/en/english_sample.wav
     filename = self.filenames[index]
     label = self.filename_to_label[filename]
     return  os.path.join(self.audio_dir, label, filename)

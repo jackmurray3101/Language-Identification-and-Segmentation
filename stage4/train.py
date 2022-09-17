@@ -29,7 +29,7 @@ def validate_network(model, valloader):
       total_val_signals += labels.size(0)
       total_val_correct += output.eq(labels).sum().item()
   model_accuracy = (total_val_correct / total_val_signals) * 100
-  print(", {0} validation accuracy {1:.2f}%".format(total_val_signals, model_accuracy))
+  print("Val set size: {0}, validation accuracy {1:.2f}%".format(total_val_signals, model_accuracy))
   model.train()
 
 def test_network(model, testloader, num_languages, languages):
@@ -38,6 +38,7 @@ def test_network(model, testloader, num_languages, languages):
   total_test_signals = 0
   total_test_correct = 0
   confusion_matrix = np.zeros((num_languages, num_languages))
+  confusion_matrix.to(device).contiguous()
   with torch.no_grad():
     for batch in testloader:
       print(confusion_matrix)
@@ -63,7 +64,7 @@ def test_network(model, testloader, num_languages, languages):
   print(confusion_matrix)
 
   model_accuracy = (total_test_correct / total_test_signals) * 100
-  print(", {0} Test accuracy {1:.2f}%".format(total_test_signals, model_accuracy))
+  print("Test set size: {0}, Test accuracy {1:.2f}%".format(total_test_signals, model_accuracy))
   model.train()
 
 

@@ -16,7 +16,6 @@ def validate_network(model, valloader):
   total_val_signals = 0
   total_val_correct = 0
   with torch.no_grad():
-    i = 0
     for batch in valloader:
       signals, mask, labels = batch
       signals = signals.to(device).contiguous()
@@ -29,19 +28,19 @@ def validate_network(model, valloader):
       output = predictions.argmax(dim=1)
       total_val_signals += labels.size(0)
       total_val_correct += output.eq(labels).sum().item()
-      i += 1
-  model_accuracy = total_val_correct / total_val_signals * 100
-  print(", {0} validation accuracy {1:.2f}%".format(total_signals, model_accuracy))
+  model_accuracy = (total_val_correct / total_val_signals) * 100
+  print(", {0} validation accuracy {1:.2f}%".format(total_val_signals, model_accuracy))
   model.train()
 
-def test_network(model, testloader):
+def test_network(model, testloader, num_languages, languages):
   print("Testing")
   model.eval()
   total_test_signals = 0
   total_test_correct = 0
+  confusion_matrix = np.zeros((num_languages, num_languages))
   with torch.no_grad():
-    i = 0
     for batch in testloader:
+      print(confusion_matrix)
       signals, mask, labels = batch
       signals = signals.to(device).contiguous()
       mask = mask.to(device).contiguous()
@@ -53,9 +52,17 @@ def test_network(model, testloader):
       output = predictions.argmax(dim=1)
       total_test_signals += labels.size(0)
       total_test_correct += output.eq(labels).sum().item()
-      i += 1
-  model_accuracy = total_test_correct / total_test_signals * 100
-  print(", {0} Test accuracy {1:.2f}%".format(total_signals, model_accuracy))
+      print("labels:")
+      print(labels)
+      print("outputs:")
+      print(output)
+      confusion_matrix[labels][output] += 1
+
+  print("  ".join(languages))
+  print(confusion_matrix)
+  
+  model_accuracy = (total_test_correct / total_test_signals) * 100
+  print(", {0} Test accuracy {1:.2f}%".format(total_test_signals, model_accuracy))
   model.train()
 
 
@@ -166,9 +173,9 @@ if __name__ == "__main__":
       print(f"epoch {epoch}, loss: {loss.item():.2f}, train {model_accuracy:.2f}%")
       
     print("Epoch completed!")
-    print(f"epoch {epoch}, average_loss_per_batch: {total_loss/len(trainloader):2f}, train {model_accuracy:.2f}%")
+    print(f"epoch {epoch}, total signals {total_signals}, average_loss_per_batch: {total_loss/len(trainloader):2f}, train {model_accuracy:.2f}%")
     validate_network(model, valloader)
     scheduler.step(total_loss/len(trainloader))
 
   print("Training Completed!")
-  test_network(model, testloader)
+  test_network(model, testloader, num_languages, config["languages"])

@@ -2,7 +2,7 @@
  
 #PBS -P wa66
 #PBS -q normal
-#PBS -l ncpus=8
+#PBS -l ncpus=12
 #PBS -l mem=16GB
 #PBS -l jobfs=10GB
 #PBS -l walltime=00:30:00

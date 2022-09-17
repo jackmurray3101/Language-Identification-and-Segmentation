@@ -37,7 +37,7 @@ def test_network(model, testloader, num_languages, languages):
   model.eval()
   total_test_signals = 0
   total_test_correct = 0
-  confusion_matrix = np.zeros((num_languages, num_languages))
+  confusion_matrix = torch.tensor(np.zeros((num_languages, num_languages)))
   confusion_matrix.to(device).contiguous()
   with torch.no_grad():
     for batch in testloader:

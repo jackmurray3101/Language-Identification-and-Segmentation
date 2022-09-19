@@ -109,9 +109,9 @@ if __name__ == "__main__":
 
   
   # TODO FIX THE NUM_WORKERS
-  trainloader = torch.utils.data.DataLoader(train_data, batch_size=batch_size, shuffle=True)
-  valloader = torch.utils.data.DataLoader(val_data, batch_size=batch_size, shuffle=True)
-  testloader = torch.utils.data.DataLoader(test_data, batch_size=batch_size, shuffle=True)
+  trainloader = torch.utils.data.DataLoader(train_data, batch_size=batch_size, shuffle=True, num_workers=4)
+  valloader = torch.utils.data.DataLoader(val_data, batch_size=batch_size, shuffle=True, num_workers=4)
+  testloader = torch.utils.data.DataLoader(test_data, batch_size=batch_size, shuffle=True, num_workers=4)
   
   if (multiGPU):
     # adjust final FC layer for LID

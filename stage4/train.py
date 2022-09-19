@@ -9,6 +9,7 @@ from data import VoxLingua107
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import numpy as np
 import json
+import sys
 
 def validate_network(model, valloader):
   print("Validating")
@@ -69,7 +70,7 @@ if __name__ == "__main__":
   print(device)
 
   # load parameters
-  config_file = open("config.json")
+  config_file = open(sys.argv[1])
   config = json.load(config_file)
 
   sr = config["sampling_rate"]        
@@ -105,10 +106,7 @@ if __name__ == "__main__":
     print(f"{torch.cuda.device_count()} GPUs Used")
     model = nn.DataParallel(model)
     multiGPU = True
-    
-
   
-  # TODO FIX THE NUM_WORKERS
   trainloader = torch.utils.data.DataLoader(train_data, batch_size=batch_size, shuffle=True, num_workers=config["num_workers"])
   valloader = torch.utils.data.DataLoader(val_data, batch_size=batch_size, shuffle=True, num_workers=config["num_workers"])
   testloader = torch.utils.data.DataLoader(test_data, batch_size=batch_size, shuffle=True, num_workers=config["num_workers"])

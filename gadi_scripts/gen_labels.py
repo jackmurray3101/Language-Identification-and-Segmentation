@@ -1,9 +1,12 @@
 import os
 
 dirs = [
-  "/g/data/wa66/jm2369/datasets/voxlingua107_train",
-  "/g/data/wa66/jm2369/datasets/voxlingua107_test",
-  "/g/data/wa66/jm2369/datasets/voxlingua107_val",
+  "/g/data/wa66/jm2369/datasets/voxlingua107_train_600",
+  "/g/data/wa66/jm2369/datasets/voxlingua107_train_1000",
+  "/g/data/wa66/jm2369/datasets/voxlingua107_train_1500",
+  "/g/data/wa66/jm2369/datasets/voxlingua107_train_2000",
+  "/g/data/wa66/jm2369/datasets/voxlingua107_test_100",
+  "/g/data/wa66/jm2369/datasets/voxlingua107_val_50",
 ]
 
 languages = [

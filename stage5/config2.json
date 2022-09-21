@@ -1,7 +1,7 @@
 {
   "sampling_rate": 16000,
   "sample_duration": 6,
-  "epochs": 10,
+  "epochs": 50,
   "batch_size": 20,
   "num_languages": 3,
   "learning_rate": 0.01,

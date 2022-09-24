@@ -35,7 +35,8 @@ for line in f:
 
 f.close()
 out_filename = re.sub(".gadi-pbs.log", f"_plot_{specified_epochs}epochs.png", filename)
-
+print(train)
+print(val)
 plt.plot(epochs, train, label="Training")
 plt.plot(epochs, val, label="Validation")
 plt.title("Model Accuracy")

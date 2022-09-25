@@ -1,9 +1,9 @@
 {
   "sampling_rate": 16000,
   "sample_duration": 6,
-  "epochs": 300,
-  "batch_size": 50,
-  "num_languages": 14,
+  "epochs": 100,
+  "batch_size": 20,
+  "num_languages": 8,
   "learning_rate": 0.01,
   "weight_decay": 0.0001,
   "patience": 5,
@@ -15,19 +15,13 @@
   "test_dir": "/g/data/wa66/jm2369/datasets/voxlingua107_test_100",
   "languages":
     [
-      "da",
-      "de",
-      "el",
       "en",
+      "de",
       "es",
       "fr",
-      "it",
-      "ja",
       "ko",
-      "nl",
-      "no",
-      "pt",
+      "zh",
       "sv",
-      "zh"
+      "no"
     ]
 }

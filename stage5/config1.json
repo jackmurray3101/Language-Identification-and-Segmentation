@@ -1,28 +1,33 @@
-
 {
   "sampling_rate": 16000,
   "sample_duration": 6,
-  "epochs": 50,
+  "epochs": 10,
   "batch_size": 20,
-  "num_languages": 8,
+  "num_languages": 14,
   "learning_rate": 0.01,
   "weight_decay": 0.0001,
   "patience": 5,
   "num_workers": 2,
-  "model_path": "/g/data/wa66/jm2369/downloaded_models/superb/wav2vec2-base-sid-model",
-  "extractor_path": "/g/data/wa66/jm2369/downloaded_models/superb/wav2vec2-base-sid-feature-extractor",
+  "model_path": "/g/data/wa66/jm2369/downloaded_models/facebook/facebook-wav2vec2-base-model",
+  "extractor_path": "/g/data/wa66/jm2369/downloaded_models/facebook/facebook-wav2vec2-base-extractor",
   "train_dir": "/g/data/wa66/jm2369/datasets/voxlingua107_train_300",
   "val_dir": "/g/data/wa66/jm2369/datasets/voxlingua107_val_40",
   "test_dir": "/g/data/wa66/jm2369/datasets/voxlingua107_test_40",
   "languages":
     [
-      "en",
+      "da",
       "de",
+      "el",
+      "en",
       "es",
       "fr",
+      "it",
+      "ja",
       "ko",
-      "zh",
+      "nl",
+      "no",
+      "pt",
       "sv",
-      "no"
+      "zh"
     ]
 }

@@ -13,4 +13,4 @@
 module load python3/3.9.2
  
 # Run Python applications
-python3 plot_accuracy.py 58795969.gadi-pbs.log 50 > $PBS_JOBID.log
+python3 plot_accuracy.py 59443921.gadi-pbs.log 50 > $PBS_JOBID.log

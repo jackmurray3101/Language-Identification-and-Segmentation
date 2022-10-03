@@ -23,13 +23,13 @@ for line in f:
     epoch = epoch[0]
     if (int(epoch) >= specified_epochs):
       break
-    train_accuracy = re.findall("[0-9]{2,3}\.{1}[0-9]{2}", line[3])
+    train_accuracy = re.findall("[0-9]{1,3}\.{1}[0-9]{2}", line[3])
     train_accuracy = train_accuracy[0]
     train[int(epoch)] = train_accuracy
 
   elif re.search("validation accuracy", line):
     line = line.split(",")
-    val_accuracy = re.findall("[0-9]{2,3}\.{1}[0-9]{2}", line[1])
+    val_accuracy = re.findall("[0-9]{1,3}\.{1}[0-9]{2}", line[1])
     val_accuracy = val_accuracy[0]
     val[int(epoch)] = val_accuracy
 

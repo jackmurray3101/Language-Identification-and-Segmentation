@@ -2,7 +2,7 @@ import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from transformers import Wav2Vec2ForSequenceClassification
+from transformers import Data2VecAudioForSequenceClassification
 from torchvision import transforms
 import audio_transforms as T
 from data import VoxLingua107
@@ -93,7 +93,7 @@ if __name__ == "__main__":
   train_data = VoxLingua107(train_dir, "labels.txt", sr, max_length, config["languages"], transform=random_transforms)
   val_data = VoxLingua107(val_dir, "labels.txt", sr, max_length, config["languages"], transform=random_transforms)
   test_data = VoxLingua107(test_dir, "labels.txt", sr, max_length, config["languages"], transform=random_transforms)
-  model = Wav2Vec2ForSequenceClassification.from_pretrained(config["model_path"])
+  model =Data2VecAudioForSequenceClassification.from_pretrained(config["model_path"])
 
   # Define training parameters  
   loss_func = nn.CrossEntropyLoss()
@@ -116,10 +116,10 @@ if __name__ == "__main__":
     model.module.classifier = nn.Linear(256, num_languages)
     
     # Freeze other layers
-    for param in model.module.wav2vec2.feature_extractor.parameters():
+    for param in model.module.data2vec_audio.feature_extractor.parameters():
       param.requires_grad = False
       
-    for param in model.module.wav2vec2.encoder.parameters():
+    for param in model.module.data2vec_audio.encoder.parameters():
       # this will set all of the transformer grads to false as well
       param.requires_grad = False
   else:
@@ -127,10 +127,10 @@ if __name__ == "__main__":
     model.classifier = nn.Linear(256, num_languages)
     
     # Freeze other layers
-    for param in model.wav2vec2.feature_extractor.parameters():
+    for param in model.data2vec_audio.feature_extractor.parameters():
       param.requires_grad = False
       
-    for param in model.wav2vec2.encoder.parameters():
+    for param in model.data2vec_audio.encoder.parameters():
       # this will set all of the transformer grads to false as well
       param.requires_grad = False
   

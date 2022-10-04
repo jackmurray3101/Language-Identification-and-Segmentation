@@ -15,4 +15,4 @@ module load python3/3.9.2
  
 # Run Python applications
 python3 train.py config2.json > $PBS_JOBID.log
-python3 plot_accuracy.py $PBS_JOBID.log 5
+python3 plot_accuracy.py $PBS_JOBID.log 50

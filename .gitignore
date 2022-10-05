@@ -15,3 +15,4 @@ stage4/completed_jobs
 stage4/failed_jobs
 stage5/completed_jobs
 segmentation/data/*
+stage*/completed_jobs

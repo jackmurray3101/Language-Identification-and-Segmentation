@@ -122,6 +122,10 @@ if __name__ == "__main__":
     for param in model.module.data2vec_audio.encoder.parameters():
       # this will set all of the transformer grads to false as well
       param.requires_grad = False
+      
+    for param in model.module.data2vec_audio.feature_projection.parameters():
+      # this will set all of the transformer grads to false as well
+      param.requires_grad = False
   else:
     # adjust final FC layer for LID
     model.classifier = nn.Linear(256, num_languages)
@@ -131,6 +135,10 @@ if __name__ == "__main__":
       param.requires_grad = False
       
     for param in model.data2vec_audio.encoder.parameters():
+      # this will set all of the transformer grads to false as well
+      param.requires_grad = False
+      
+    for param in model.data2vec_audio.feature_projection.parameters():
       # this will set all of the transformer grads to false as well
       param.requires_grad = False
   

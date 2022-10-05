@@ -175,9 +175,15 @@ if __name__ == "__main__":
       print(f"epoch {epoch}, loss: {loss.item():.2f}, train {model_accuracy:.2f}%")
       
     print("Epoch completed!")
-    print(f"epoch {epoch}, total signals {total_signals}, average_loss_per_batch: {total_loss/len(trainloader):2f}, train {model_accuracy:.2f}%")
+    print(f"epoch {epoch}, total signals {total_signals}, average_loss_per_batch: {total_loss/len(trainloader):2f}, train {model_accuracy:.2f}%")   
     validate_network(model, valloader)
     scheduler.step(total_loss/len(trainloader))
+    if epoch % config['save_model_frequency'] == 0 and epoch:
+      
+      model_path = config["model_save_path"] + f"-epoch{epoch}"
+      torch.save(model.state_dict(), model_path)
+
 
   print("Training Completed!")
   test_network(model, testloader, num_languages, config["languages"])
+  

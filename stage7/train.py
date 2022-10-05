@@ -122,6 +122,9 @@ if __name__ == "__main__":
     for param in model.module.hubert.encoder.parameters():
       # this will set all of the transformer grads to false as well
       param.requires_grad = False
+      
+    for param in model.module.hubert.feature_projection.parameters():
+      param.requires_grad = False
   else:
     # adjust final FC layer for LID
     model.classifier = nn.Linear(256, num_languages)
@@ -133,6 +136,10 @@ if __name__ == "__main__":
     for param in model.hubert.encoder.parameters():
       # this will set all of the transformer grads to false as well
       param.requires_grad = False
+      
+    for param in model.hubert.feature_projection.parameters():
+      param.requires_grad = False  
+    
   
   model_parameters = filter(lambda p: p.requires_grad, model.parameters())
   params = sum([np.prod(p.size()) for p in model_parameters])

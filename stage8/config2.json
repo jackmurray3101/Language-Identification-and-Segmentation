@@ -13,6 +13,8 @@
   "train_dir": "/g/data/wa66/jm2369/datasets/voxlingua107_train_300",
   "val_dir": "/g/data/wa66/jm2369/datasets/voxlingua107_val_40",
   "test_dir": "/g/data/wa66/jm2369/datasets/voxlingua107_test_40",
+  "model_save_frequency": 10,
+  "model_save_path": "/g/data/wa66/jm2369/saved_trained_models/Hubert-3-different",
   "languages":
     [
       "en",

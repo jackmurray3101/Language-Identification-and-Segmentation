@@ -183,7 +183,8 @@ if __name__ == "__main__":
       model_path = config["model_save_path"] + f"-epoch{epoch}"
       torch.save(model.state_dict(), model_path)
 
-
+  model_path = config["model_save_path"] + f"-epoch{epochs}"
+  torch.save(model.state_dict(), model_path)
   print("Training Completed!")
   test_network(model, testloader, num_languages, config["languages"])
   

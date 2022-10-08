@@ -1,7 +1,7 @@
 {
   "sampling_rate": 16000,
-  "sample_duration": 6,
-  "epochs": 50,
+  "sample_duration": 10,
+  "epochs": 100,
   "batch_size": 20,
   "num_languages": 8,
   "learning_rate": 0.01,
@@ -10,9 +10,11 @@
   "num_workers": 2,
   "model_path": "/g/data/wa66/jm2369/downloaded_models/facebook/hubert/hubert-base-ls960-model",
   "extractor_path": "/g/data/wa66/jm2369/downloaded_models/facebook/hubert/hubert-base-ls960-extractor",
-  "train_dir": "/g/data/wa66/jm2369/datasets/voxlingua107_train_300",
-  "val_dir": "/g/data/wa66/jm2369/datasets/voxlingua107_val_40",
-  "test_dir": "/g/data/wa66/jm2369/datasets/voxlingua107_test_40",
+  "train_dir": "/g/data/wa66/jm2369/datasets/voxlingua107_train_600",
+  "val_dir": "/g/data/wa66/jm2369/datasets/voxlingua107_val_50",
+  "test_dir": "/g/data/wa66/jm2369/datasets/voxlingua107_test_100",
+  "model_save_frequency": 10,
+  "model_save_path": "/g/data/wa66/jm2369/saved_trained_models/Hubert-8lan",
   "languages":
     [
       "en",

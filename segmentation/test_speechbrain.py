@@ -10,7 +10,7 @@ language_id = EncoderClassifier.from_hparams(source="speechbrain/lang-id-commonl
 
 cwd = os.getcwd()
 signal_path = os.path.join(cwd, "data")
-signal_path = os.path.join(signal_path, "prideandprejudice.wav")
+signal_path = os.path.join(signal_path, "10min-prideandprejudice.wav")
 signal = language_id.load_audio(signal_path)
 #signal = torchaudio.load(signal_path, format="mp3")
 #signal = librosa.load(signal_path, sr=16000, mono=True)[0]

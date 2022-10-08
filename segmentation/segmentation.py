@@ -1,50 +1,79 @@
-import json
-import librosa
 import os
+import json
 import math
-from transformers import HubertForSequenceClassification
+import time
+import torch
+import librosa
+import numpy as np
+import torch.nn as nn
+from speechbrain.pretrained import EncoderClassifier
+from transformers import HubertForSequenceClassification, Wav2Vec2FeatureExtractor
 
-def speechbrain_predict(signal):
-  pass
 
-def hubert_predict(signal):
-  model = HubertForSequenceClassification.from_pretrained("facebook/hubert-base-ls960")
-  model.load_state_dict(torch.load("./saved_trained_models/Hubert-3-similar-epoch40"))
-  model.eval()
-
+def pad(segment, new_segment_length):
+  print(f"segment length = {len(segment)}")
+  new_segment = np.pad(segment, (0, new_segment_length - len(segment)))
+  print(f"new_segment length = {len(new_segment)}")
+  return new_segment
 
 if __name__ == "__main__":
-  config_file = open("segmentation_config.json")
+  start_time = time.time()
+  config_file = open("c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\segmentation_config.json")
   config = json.load(config_file)
 
-  segment_size = 20   # seconds
-  samples_per_segment = segment_size * config["sampling_rate"]
+  device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-  feature_extractor = Wav2Vec2FeatureExtractor.from_pretrained("facebook/hubert-base-ls960")
+  # setup
+  if config["LID_system"] == "sb":
+    language_id = EncoderClassifier.from_hparams(source="speechbrain/lang-id-commonlanguage_ecapa", savedir=config["speechbrain_model_path"], run_opts={"device":device})
+
+  elif config["LID_system"] == "hu":
+    model = HubertForSequenceClassification.from_pretrained(config["hubert_model_type"])
+    model.classifier = nn.Linear(256, config["num_languages"])
+    model.load_state_dict(torch.load(config["hubert_model_path"]))
+    model = model.to(device)
+    model.eval()
+    feature_extractor = Wav2Vec2FeatureExtractor.from_pretrained(config["model_extractor"])
+
+
+  segment_length = config["segment_length"]
+  sampling_rate = config["sampling_rate"]
+  samples_per_segment = segment_length * sampling_rate
+
+
 
   for filename in os.listdir(config["data_dir"]):
+    print(f"Predicting {filename}")
     filepath = os.path.join(config["data_dir"], filename)
     signal = librosa.load(filepath, sr=config["sampling_rate"], mono=True)[0]
-    
+
     num_segments = math.ceil(len(signal)/samples_per_segment)
     for i in range(0, num_segments):
-      segment = segment[i*samples_per_segment : (i+1)*samples_per_segment - 1]
       
-      # if the last segment isn't large enough, the above syntax will take whatever samples
-      # are left, and the w2v feature extractor will pad with zeros and return corresponding attention mask
+      if i == num_segments - 1:
+        segment = signal[i*samples_per_segment : len(signal)]
+        segment = np.pad(segment, (0, samples_per_segment - len(segment)))
+      else:
+        segment = signal[i*samples_per_segment : (i+1)*samples_per_segment]
+      
+      segment = torch.tensor(segment)
+      if config["LID_system"] == "sb":
+        # make inference using speechbrain model
+        segment.to(device).contiguous()
+        predictions = language_id.classify_batch(segment)
 
-      input_values = feature_extractor(segment, sampling_rate = sampling_rate, padding = 'max_length', max_length = sampling_rate*segment_size, return_tensors = 'pt', return_attention_mask = True, truncation = True)
-    
-    # TODO
-    # Explore running inferences on batches for speed up, instead of consecutively
+      elif config["LID_system"] == "hu":
+        # make inference using fine-tuned HuBERT model 
+        inputs = feature_extractor(segment, sampling_rate = sampling_rate, padding = 'max_length', max_length = sampling_rate*segment_length, return_tensors = 'pt', return_attention_mask = True, truncation = True)
+        inputs["input_values"] = inputs["input_values"].to(device).contiguous()
+        inputs["attention_mask"] = inputs["attention_mask"].to(device).contiguous()
+        predictions = model(**inputs).logits.detach()
+      else:
+        print("Unrecognised LID system. Exiting...")
+        break
+      print(f"segment {i}")
+      print(predictions)
 
-
-    if config["LID_system"] == "sb":
-      speechbrain_predict(signal)
-    elif config["LID_system"] == "hu":
-      hubert_predict(signal)
-    else:
-      print("Unrecognised LID system. Exiting...")
-      break
 
   config_file.close()
+  print("--- %s seconds ---" % (time.time() - start_time))

@@ -1,17 +1,17 @@
 {
   "sampling_rate": 16000,
-  "segment_length": 20,
+  "sample_duration": 10,
+  "batch_size": 20,
   "num_languages": 3,
-  "LID_system": "hu",
-  "data_dir": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\data",
+  "num_workers": 2,
+  "test_dir": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\datasets\\voxlingua107_test",
   "model_extractor": "facebook/hubert-base-ls960",
   "hubert_model_path": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\saved_trained_models\\hubert\\Hubert-3-different-epoch20.pt",
   "hubert_model_type": "facebook/hubert-base-ls960",
-  "speechbrain_model_path": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\saved_trained_models\\speechbrain",
   "languages":
-  [
-    "en",
-    "es",
-    "ko"
-  ]
+    [
+      "en",
+      "es",
+      "ko"
+    ]
 }

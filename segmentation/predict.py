@@ -1,13 +1,13 @@
 import os
 import json
 import math
-import time
 import torch
 import librosa
 import numpy as np
 import torch.nn as nn
 from speechbrain.pretrained import EncoderClassifier
 from transformers import HubertForSequenceClassification, Wav2Vec2FeatureExtractor
+from segmentation2 import segmentation
 
 
 def pad(segment, new_segment_length):
@@ -16,8 +16,8 @@ def pad(segment, new_segment_length):
   print(f"new_segment length = {len(new_segment)}")
   return new_segment
 
+
 if __name__ == "__main__":
-  start_time = time.time()
   config_file = open("c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\segmentation_config.json")
   config = json.load(config_file)
 
@@ -25,7 +25,25 @@ if __name__ == "__main__":
 
   # setup
   if config["LID_system"] == "sb":
-    language_id = EncoderClassifier.from_hparams(source="speechbrain/lang-id-commonlanguage_ecapa", savedir=config["speechbrain_model_path"], run_opts={"device":device})
+    language_id = EncoderClassifier.from_hparams(source="speechbrain/lang-id-voxlingua107-ecapa", savedir=config["speechbrain_model_path"], run_opts={"device":device})
+    
+    # as this system performs LID on 107 languages, these are just the ones we care about
+    language_index_mapping = {
+      "da": 17,
+      "de": 18,
+      "el": 19,
+      "en": 20,
+      "es": 22,
+      "fr": 28,
+      "it": 43,
+      "ja": 45,
+      "ko": 51,
+      "nl": 68,
+      "no": 70,
+      "pt": 75,
+      "sv": 89,
+      "zh": 106
+    }
 
   elif config["LID_system"] == "hu":
     model = HubertForSequenceClassification.from_pretrained(config["hubert_model_type"])
@@ -36,18 +54,24 @@ if __name__ == "__main__":
     feature_extractor = Wav2Vec2FeatureExtractor.from_pretrained(config["model_extractor"])
 
 
+  languages = config["languages"]
   segment_length = config["segment_length"]
   sampling_rate = config["sampling_rate"]
   samples_per_segment = segment_length * sampling_rate
-
-
+  softmax = nn.Softmax(dim=1)
 
   for filename in os.listdir(config["data_dir"]):
-    print(f"Predicting {filename}")
+    print("#########################################")
+    print(f"Segmenting {filename}")
+    print("#########################################")
+
     filepath = os.path.join(config["data_dir"], filename)
     signal = librosa.load(filepath, sr=config["sampling_rate"], mono=True)[0]
 
+    
     num_segments = math.ceil(len(signal)/samples_per_segment)
+    all_predictions = torch.empty(num_segments, len(languages))
+
     for i in range(0, num_segments):
       
       if i == num_segments - 1:
@@ -61,19 +85,49 @@ if __name__ == "__main__":
         # make inference using speechbrain model
         segment.to(device).contiguous()
         predictions = language_id.classify_batch(segment)
-
+        predictions = predictions[0]
+        refined_predictions = torch.empty(len(languages))
+        for j, language in enumerate(languages):
+          refined_predictions[j] = predictions[0][language_index_mapping[language]]
+        predictions = refined_predictions
       elif config["LID_system"] == "hu":
         # make inference using fine-tuned HuBERT model 
         inputs = feature_extractor(segment, sampling_rate = sampling_rate, padding = 'max_length', max_length = sampling_rate*segment_length, return_tensors = 'pt', return_attention_mask = True, truncation = True)
         inputs["input_values"] = inputs["input_values"].to(device).contiguous()
         inputs["attention_mask"] = inputs["attention_mask"].to(device).contiguous()
         predictions = model(**inputs).logits.detach()
+        print(predictions)
+
       else:
         print("Unrecognised LID system. Exiting...")
         break
-      print(f"segment {i}")
-      print(predictions)
 
+      all_predictions[i] = predictions
+    # segmentation
+    all_predictions = softmax(all_predictions)   
+    language_sequence, segments_per_language, transitions = segmentation(all_predictions, languages)
 
+    # print output
+
+    print("-------------------------")
+    print("----Language Sequence----")
+    print("-------------------------")
+    for seg, pred in language_sequence.items():
+      print(f"{seg}: {pred}")
+
+    print("-------------------------")
+    print("--Segments Per Language--")
+    print("-------------------------")
+    segments_per_language_dict = {}
+    for i in range(0, len(languages)):
+      segments_per_language_dict[languages[i]] = segments_per_language[i]
+    print(segments_per_language_dict)
+
+    print("-------------------------")
+    print("-------Transitions-------")
+    print("-------------------------")
+    if len(transitions) == 0:
+      print("No language transitions occurred")
+    else:
+      print(*transitions, sep="\n")
   config_file.close()
-  print("--- %s seconds ---" % (time.time() - start_time))

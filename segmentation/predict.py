@@ -7,7 +7,7 @@ import numpy as np
 import torch.nn as nn
 from speechbrain.pretrained import EncoderClassifier
 from transformers import HubertForSequenceClassification, Wav2Vec2FeatureExtractor
-from segmentation2 import segmentation
+from segmentation3 import segmentation
 
 
 def pad(segment, new_segment_length):
@@ -18,7 +18,7 @@ def pad(segment, new_segment_length):
 
 
 if __name__ == "__main__":
-  config_file = open("c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\segmentation_config.json")
+  config_file = open("c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\segmentation_config2.json")
   config = json.load(config_file)
 
   device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -57,7 +57,9 @@ if __name__ == "__main__":
   languages = config["languages"]
   segment_length = config["segment_length"]
   sampling_rate = config["sampling_rate"]
+  hop_time = config["hop_time"]
   samples_per_segment = segment_length * sampling_rate
+  samples_per_hop = hop_time * sampling_rate
   softmax = nn.Softmax(dim=1)
 
   for filename in os.listdir(config["data_dir"]):
@@ -68,18 +70,18 @@ if __name__ == "__main__":
     filepath = os.path.join(config["data_dir"], filename)
     signal = librosa.load(filepath, sr=config["sampling_rate"], mono=True)[0]
 
-    
-    num_segments = math.ceil(len(signal)/samples_per_segment)
+    if len(signal) <= samples_per_segment:
+      num_segments = 1
+      signal = np.pad(signal, (0, samples_per_segment - len(signal)))
+    else:
+      signal = np.pad(signal, (0, samples_per_hop - (len(signal) % samples_per_hop)))
+
+    num_segments = 1 + (len(signal) - samples_per_segment)//samples_per_hop
     all_predictions = torch.empty(num_segments, len(languages))
 
     for i in range(0, num_segments):
       
-      if i == num_segments - 1:
-        segment = signal[i*samples_per_segment : len(signal)]
-        segment = np.pad(segment, (0, samples_per_segment - len(segment)))
-      else:
-        segment = signal[i*samples_per_segment : (i+1)*samples_per_segment]
-      
+      segment = signal[i*samples_per_hop : i*samples_per_hop + samples_per_segment]
       segment = torch.tensor(segment)
       if config["LID_system"] == "sb":
         # make inference using speechbrain model
@@ -96,7 +98,6 @@ if __name__ == "__main__":
         inputs["input_values"] = inputs["input_values"].to(device).contiguous()
         inputs["attention_mask"] = inputs["attention_mask"].to(device).contiguous()
         predictions = model(**inputs).logits.detach()
-        print(predictions)
 
       else:
         print("Unrecognised LID system. Exiting...")

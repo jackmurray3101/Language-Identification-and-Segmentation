@@ -7,7 +7,7 @@ import numpy as np
 import torch.nn as nn
 from speechbrain.pretrained import EncoderClassifier
 from transformers import HubertForSequenceClassification, Wav2Vec2FeatureExtractor
-from segmentation3 import segmentation
+from segmentation1 import segmentation
 
 
 def pad(segment, new_segment_length):
@@ -18,7 +18,7 @@ def pad(segment, new_segment_length):
 
 
 if __name__ == "__main__":
-  config_file = open("c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\segmentation_config2.json")
+  config_file = open("c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\segmentation_config4.json")
   config = json.load(config_file)
 
   device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -62,6 +62,7 @@ if __name__ == "__main__":
   samples_per_hop = hop_time * sampling_rate
   softmax = nn.Softmax(dim=1)
 
+  accuracies = []
   for filename in os.listdir(config["data_dir"]):
     print("#########################################")
     print(f"Segmenting {filename}")
@@ -74,7 +75,8 @@ if __name__ == "__main__":
       num_segments = 1
       signal = np.pad(signal, (0, samples_per_segment - len(signal)))
     else:
-      signal = np.pad(signal, (0, samples_per_hop - (len(signal) % samples_per_hop)))
+      if len(signal) % samples_per_hop:
+        signal = np.pad(signal, (0, samples_per_hop - (len(signal) % samples_per_hop)))
 
     num_segments = 1 + (len(signal) - samples_per_segment)//samples_per_hop
     all_predictions = torch.empty(num_segments, len(languages))
@@ -110,11 +112,11 @@ if __name__ == "__main__":
 
     # print output
 
-    print("-------------------------")
-    print("----Language Sequence----")
-    print("-------------------------")
-    for seg, pred in language_sequence.items():
-      print(f"{seg}: {pred}")
+    #print("-------------------------")
+    #print("----Language Sequence----")
+    #print("-------------------------")
+    #for seg, pred in language_sequence.items():
+    #  print(f"{seg}: {pred}")
 
     print("-------------------------")
     print("--Segments Per Language--")
@@ -124,11 +126,22 @@ if __name__ == "__main__":
       segments_per_language_dict[languages[i]] = segments_per_language[i]
     print(segments_per_language_dict)
 
-    print("-------------------------")
-    print("-------Transitions-------")
-    print("-------------------------")
-    if len(transitions) == 0:
-      print("No language transitions occurred")
-    else:
-      print(*transitions, sep="\n")
+    actual_lan = filename[0:2] # only works for the cleaned data
+    accuracy =  (100 *segments_per_language_dict[actual_lan])/num_segments
+    print(f"Accuracy = {accuracy}%")
+    accuracies.append(accuracy)
+    #print("-------------------------")
+    #print("-------Transitions-------")
+    #print("-------------------------")
+    #if len(transitions) == 0:
+    #  print("No language transitions occurred")
+    #else:
+    #  print(*transitions, sep="\n")
   config_file.close()
+
+  for a in accuracies:
+    print(round(a, 2))
+
+  avg_acc = sum(accuracies)/len(accuracies)
+
+  print(f"avg acc = {avg_acc}")

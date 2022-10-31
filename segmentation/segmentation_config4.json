@@ -1,10 +1,10 @@
 {
   "sampling_rate": 16000,
-  "segment_length": 20,
-  "hop_time": 2,
+  "segment_length": 5,
+  "hop_time": 5,
   "num_languages": 14,
   "LID_system": "hu",
-  "data_dir": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\data",
+  "data_dir": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\cleaned_data",
   "model_extractor": "facebook/hubert-base-ls960",
   "hubert_model_path": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\saved_trained_models\\hubert\\Hubert-14lan-epoch50.pt",
   "hubert_model_type": "facebook/hubert-base-ls960",

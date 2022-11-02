@@ -9,16 +9,8 @@ from speechbrain.pretrained import EncoderClassifier
 from transformers import HubertForSequenceClassification, Wav2Vec2FeatureExtractor
 from segmentation1 import segmentation
 
-
-def pad(segment, new_segment_length):
-  print(f"segment length = {len(segment)}")
-  new_segment = np.pad(segment, (0, new_segment_length - len(segment)))
-  print(f"new_segment length = {len(new_segment)}")
-  return new_segment
-
-
 if __name__ == "__main__":
-  config_file = open("c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\segmentation_config4.json")
+  config_file = open("c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\segmentation_config3.json")
   config = json.load(config_file)
 
   device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")

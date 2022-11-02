@@ -6,20 +6,18 @@ import soundfile as sf
 
 ########
 class_num = 1
-num_files = 6
-lan1 = "da"
-lan2 = "no"
-lan3 = "sv"
+num_files = 4
+lan1 = "en"
+lan2 = "es"
+lan3 = "ko"
 
 
 src1_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\cleaned_data\\{lan1}-male.wav"
 src2_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\cleaned_data\\{lan1}-female.wav"
 src3_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\cleaned_data\\{lan2}-male.wav"
 src4_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\cleaned_data\\{lan2}-female.wav"
-src5_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\cleaned_data\\{lan3}-male.wav"
-src6_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\cleaned_data\\{lan3}-female.wav"
-dst_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\multilingual_data\\class{class_num}\\{lan1}-{lan2}-{lan3}-{class_num}.wav"
-label_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\multilingual_data\\class{class_num}\\{lan1}-{lan2}-{lan3}-{class_num}.txt"
+dst_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\multilingual_data\\class{class_num}\\{lan1}-{lan2}-{class_num}.wav"
+label_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\multilingual_data\\class{class_num}\\{lan1}-{lan2}-{class_num}.txt"
 sr = 16000
 
 if class_num == 1:
@@ -39,11 +37,9 @@ signal1 = librosa.load(src1_filepath, sr=sr, mono=True)[0]
 signal2 = librosa.load(src2_filepath, sr=sr, mono=True)[0]
 signal3 = librosa.load(src3_filepath, sr=sr, mono=True)[0]
 signal4 = librosa.load(src4_filepath, sr=sr, mono=True)[0]
-signal5 = librosa.load(src5_filepath, sr=sr, mono=True)[0]
-signal6 = librosa.load(src6_filepath, sr=sr, mono=True)[0]
 
-signals = [signal1, signal2, signal3, signal4, signal5, signal6]
-labels = [lan1, lan1, lan2, lan2, lan3, lan3]
+signals = [signal1, signal2, signal3, signal4]
+labels = [lan1, lan1, lan2, lan2]
 
 ##############
 

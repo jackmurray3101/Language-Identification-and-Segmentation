@@ -22,3 +22,4 @@ segmentation/cleaned_data/da-female.wav segmentation/cleaned_data/da-male.wav se
 segmentation/cleaned_data
 segmentation/longer_data
 segmentation/seg_output_files
+segmentation/multilingual_data

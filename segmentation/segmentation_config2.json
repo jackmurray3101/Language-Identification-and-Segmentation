@@ -1,6 +1,6 @@
 {
   "sampling_rate": 16000,
-  "segment_length": 5,
+  "segment_length": 20,
   "hop_time": 5,
   "num_languages": 3,
   "LID_system": "hu",

@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 '''
   Find language transitions given a sequence of language probabilities
@@ -25,7 +26,7 @@ import numpy as np
 '''
 
 
-def segmentation(all_predictions, languages):
+def segmentation(all_predictions, languages, segment_length, hop_time):
 
   segments_per_language = np.zeros(len(languages))
   language_sequence = {}
@@ -34,6 +35,7 @@ def segmentation(all_predictions, languages):
   prev_language = 0
   threshold = 0.25
   edge_buffer = 5
+  offset = int(segment_length/hop_time)
 
   for i in range(edge_buffer, len(all_predictions) - edge_buffer):
     
@@ -60,19 +62,43 @@ def segmentation(all_predictions, languages):
         language_sequence[f"Segment {j}"] = languages[avg.argmax().item()]
       segments_per_language[avg.argmax().item()] += edge_buffer
     else:
-      left = 0.3 * all_predictions[i-3] + 0.3 * all_predictions[i-2] + 0.4 * all_predictions[i-1]
-      right = 0.4 * all_predictions[i] + 0.3 * all_predictions[i+1] + 0.3 * all_predictions[i+2]
-      dp = np.dot(left, right)
-      print(f"dp = {dp}")
+      # add log probabilities
+      print("Pred i")
+      print(all_predictions[i])
+      left = all_predictions[i] + all_predictions[i-1] + all_predictions[i-2]
+      right = all_predictions[i+offset] + all_predictions[i+1+offset] + all_predictions[i+2+offset]
+      print("Left")
+      print(left)
+      print("Right")
+      print(right)
+      probs_left = np.zeros(len(left))
+      probs_right = np.zeros(len(right))
+      for p in range(len(left)):
+        probs_left[p] = math.exp(left[p])
+        probs_right[p] = math.exp(right[p])
+      print("Probs Left")
+      print(probs_left)
+      print("Probs Right")
+      print(probs_right)
+      #intermediate = left + right
+      #print(intermediate)
+      #output = np.zeros(len(intermediate))
+      #for k, entry in enumerate(intermediate):
+        #output[k] = math.exp(entry)
+      #print(output)
+      #dp = sum(output)
+      dp = np.dot(probs_left, probs_right)
+      print(f"{dp}")
       if dp < threshold:
         # transition may have occured
-        print("Below threshold")
+        #print("Below threshold")
         prev_language = curr_language
         curr_language = right.argmax().item()
         if curr_language == prev_language:
-          print("But no change")
+         # print("But no change")
+         pass
         else:
-          print("tranisiton occured")
+         # print("tranisiton occured")
           transitions.append(f"Transition from {languages[prev_language]} to {languages[curr_language]} between segment {i-1} and {i}")
 
       language_sequence[f"Segment {i}"] = languages[curr_language]

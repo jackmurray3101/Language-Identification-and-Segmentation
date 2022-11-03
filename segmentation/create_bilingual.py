@@ -9,7 +9,6 @@ class_num = 1
 num_files = 4
 lan1 = "en"
 lan2 = "es"
-lan3 = "ko"
 
 
 src1_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\cleaned_data\\{lan1}-male.wav"

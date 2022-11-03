@@ -7,10 +7,10 @@ import numpy as np
 import torch.nn as nn
 from speechbrain.pretrained import EncoderClassifier
 from transformers import HubertForSequenceClassification, Wav2Vec2FeatureExtractor
-from segmentation1 import segmentation
+from segmentation3 import segmentation
 
 if __name__ == "__main__":
-  config_file = open("c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\segmentation_config3.json")
+  config_file = open("c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\segmentation_config4.json")
   config = json.load(config_file)
 
   device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -52,13 +52,18 @@ if __name__ == "__main__":
   hop_time = config["hop_time"]
   samples_per_segment = segment_length * sampling_rate
   samples_per_hop = hop_time * sampling_rate
+  log_softmax = nn.LogSoftmax(dim=1)
   softmax = nn.Softmax(dim=1)
+  if segment_length % hop_time != 0:
+    #print("Error, segment length should be a multiple of hop time")
+    exit(1)
+
 
   accuracies = []
   for filename in os.listdir(config["data_dir"]):
-    print("#########################################")
-    print(f"Segmenting {filename}")
-    print("#########################################")
+    #print("#########################################")
+    #print(f"Segmenting {filename}")
+    #print("#########################################")
 
     filepath = os.path.join(config["data_dir"], filename)
     signal = librosa.load(filepath, sr=config["sampling_rate"], mono=True)[0]
@@ -92,48 +97,47 @@ if __name__ == "__main__":
         inputs["input_values"] = inputs["input_values"].to(device).contiguous()
         inputs["attention_mask"] = inputs["attention_mask"].to(device).contiguous()
         predictions = model(**inputs).logits.detach()
-
+        #predictions = log_softmax(predictions)
       else:
-        print("Unrecognised LID system. Exiting...")
+        #print("Unrecognised LID system. Exiting...")
         break
-
       all_predictions[i] = predictions
     # segmentation
-    all_predictions = softmax(all_predictions)   
-    language_sequence, segments_per_language, transitions = segmentation(all_predictions, languages)
+    #all_predictions = softmax(all_predictions)   
+    language_sequence, segments_per_language, transitions = segmentation(all_predictions, languages, segment_length, hop_time)
 
-    # print output
+    # #print output
 
     #print("-------------------------")
     #print("----Language Sequence----")
     #print("-------------------------")
     #for seg, pred in language_sequence.items():
-    #  print(f"{seg}: {pred}")
+    #  #print(f"{seg}: {pred}")
 
-    print("-------------------------")
-    print("--Segments Per Language--")
-    print("-------------------------")
+    #print("-------------------------")
+    #print("--Segments Per Language--")
+    #print("-------------------------")
     segments_per_language_dict = {}
     for i in range(0, len(languages)):
       segments_per_language_dict[languages[i]] = segments_per_language[i]
-    print(segments_per_language_dict)
+    #print(segments_per_language_dict)
 
     actual_lan = filename[0:2] # only works for the cleaned data
     accuracy =  (100 *segments_per_language_dict[actual_lan])/num_segments
-    print(f"Accuracy = {accuracy}%")
+    #print(f"Accuracy = {accuracy}%")
     accuracies.append(accuracy)
     #print("-------------------------")
     #print("-------Transitions-------")
     #print("-------------------------")
     #if len(transitions) == 0:
-    #  print("No language transitions occurred")
+    #  #print("No language transitions occurred")
     #else:
-    #  print(*transitions, sep="\n")
+    #  #print(*transitions, sep="\n")
   config_file.close()
 
-  for a in accuracies:
-    print(round(a, 2))
+  #for a in accuracies:
+    #print(round(a, 2))
 
   avg_acc = sum(accuracies)/len(accuracies)
 
-  print(f"avg acc = {avg_acc}")
+  #print(f"avg acc = {avg_acc}")

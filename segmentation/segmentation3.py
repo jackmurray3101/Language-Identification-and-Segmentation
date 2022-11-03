@@ -1,5 +1,5 @@
 import numpy as np
-import math
+import torch
 
 '''
   Find language transitions given a sequence of language probabilities
@@ -71,23 +71,10 @@ def segmentation(all_predictions, languages, segment_length, hop_time):
       print(left)
       print("Right")
       print(right)
-      probs_left = np.zeros(len(left))
-      probs_right = np.zeros(len(right))
-      for p in range(len(left)):
-        probs_left[p] = math.exp(left[p])
-        probs_right[p] = math.exp(right[p])
-      print("Probs Left")
-      print(probs_left)
-      print("Probs Right")
-      print(probs_right)
-      #intermediate = left + right
-      #print(intermediate)
-      #output = np.zeros(len(intermediate))
-      #for k, entry in enumerate(intermediate):
-        #output[k] = math.exp(entry)
-      #print(output)
-      #dp = sum(output)
-      dp = np.dot(probs_left, probs_right)
+      # compute dot product by adding log vectors, converting to linear, then summing vectors
+      addition = left + right
+      linear_probs = torch.exp(addition)
+      dp = sum(linear_probs)
       print(f"{dp}")
       if dp < threshold:
         # transition may have occured

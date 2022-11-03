@@ -53,7 +53,6 @@ if __name__ == "__main__":
   samples_per_segment = segment_length * sampling_rate
   samples_per_hop = hop_time * sampling_rate
   log_softmax = nn.LogSoftmax(dim=1)
-  softmax = nn.Softmax(dim=1)
   if segment_length % hop_time != 0:
     #print("Error, segment length should be a multiple of hop time")
     exit(1)
@@ -97,16 +96,15 @@ if __name__ == "__main__":
         inputs["input_values"] = inputs["input_values"].to(device).contiguous()
         inputs["attention_mask"] = inputs["attention_mask"].to(device).contiguous()
         predictions = model(**inputs).logits.detach()
-        #predictions = log_softmax(predictions)
       else:
-        #print("Unrecognised LID system. Exiting...")
+        print("Unrecognised LID system. Exiting...")
         break
       all_predictions[i] = predictions
     # segmentation
-    #all_predictions = softmax(all_predictions)   
+    all_predictions = log_softmax(all_predictions)
     language_sequence, segments_per_language, transitions = segmentation(all_predictions, languages, segment_length, hop_time)
 
-    # #print output
+    #print output
 
     #print("-------------------------")
     #print("----Language Sequence----")

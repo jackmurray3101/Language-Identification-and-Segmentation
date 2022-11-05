@@ -3,10 +3,10 @@
   "segment_length": 20,
   "hop_time": 5,
   "num_languages": 14,
-  "LID_system": "sb",
+  "LID_system": "hu",
   "data_dir": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\multilingual_data\\class3\\test_file",
   "model_extractor": "facebook/hubert-base-ls960",
-  "hubert_model_path": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\saved_trained_models\\hubert\\Hubert-14lan-epoch50.pt",
+  "hubert_model_path": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\saved_trained_models\\hubert\\Hubert-14lan-epoch20.pt",
   "hubert_model_type": "facebook/hubert-base-ls960",
   "speechbrain_model_path": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\saved_trained_models\\speechbrain",
   "languages":

@@ -60,9 +60,9 @@ if __name__ == "__main__":
 
   accuracies = []
   for filename in os.listdir(config["data_dir"]):
-    #print("#########################################")
-    #print(f"Segmenting {filename}")
-    #print("#########################################")
+    print("#########################################")
+    print(f"Segmenting {filename}")
+    print("#########################################")
 
     filepath = os.path.join(config["data_dir"], filename)
     signal = librosa.load(filepath, sr=config["sampling_rate"], mono=True)[0]
@@ -102,40 +102,40 @@ if __name__ == "__main__":
       all_predictions[i] = predictions
     # segmentation
     all_predictions = log_softmax(all_predictions)
-    language_sequence, segments_per_language, transitions = segmentation(all_predictions, languages, segment_length, hop_time)
+    language_sequence, segments_per_language, transitions = segmentation(all_predictions, languages, segment_length, hop_time, sampling_rate)
 
     #print output
 
-    #print("-------------------------")
-    #print("----Language Sequence----")
-    #print("-------------------------")
-    #for seg, pred in language_sequence.items():
-    #  #print(f"{seg}: {pred}")
+    print("-------------------------")
+    print("----Language Sequence----")
+    print("-------------------------")
+    for seg, pred in language_sequence.items():
+      print(f"{seg}: {pred}")
 
-    #print("-------------------------")
-    #print("--Segments Per Language--")
-    #print("-------------------------")
+    print("-------------------------")
+    print("--Segments Per Language--")
+    print("-------------------------")
     segments_per_language_dict = {}
     for i in range(0, len(languages)):
       segments_per_language_dict[languages[i]] = segments_per_language[i]
-    #print(segments_per_language_dict)
+    print(segments_per_language_dict)
 
     actual_lan = filename[0:2] # only works for the cleaned data
     accuracy =  (100 *segments_per_language_dict[actual_lan])/num_segments
-    #print(f"Accuracy = {accuracy}%")
+    print(f"Accuracy = {accuracy}%")
     accuracies.append(accuracy)
-    #print("-------------------------")
-    #print("-------Transitions-------")
-    #print("-------------------------")
-    #if len(transitions) == 0:
-    #  #print("No language transitions occurred")
-    #else:
-    #  #print(*transitions, sep="\n")
+    print("-------------------------")
+    print("-------Transitions-------")
+    print("-------------------------")
+    if len(transitions) == 0:
+      print("No language transitions occurred")
+    else:
+      print(*transitions, sep="\n")
   config_file.close()
 
-  #for a in accuracies:
-    #print(round(a, 2))
+  for a in accuracies:
+    print(round(a, 2))
 
   avg_acc = sum(accuracies)/len(accuracies)
 
-  #print(f"avg acc = {avg_acc}")
+  print(f"avg acc = {avg_acc}")

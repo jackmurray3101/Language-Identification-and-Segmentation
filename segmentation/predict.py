@@ -5,9 +5,82 @@ import torch
 import librosa
 import numpy as np
 import torch.nn as nn
-from speechbrain.pretrained import EncoderClassifier
-from transformers import HubertForSequenceClassification, Wav2Vec2FeatureExtractor
 from segmentation3 import segmentation
+from pyannote.core import Timeline, Segment, Annotation
+from speechbrain.pretrained import EncoderClassifier
+from pyannote.metrics.segmentation import SegmentationPrecision, SegmentationRecall, SegmentationPurity, SegmentationCoverage
+from transformers import HubertForSequenceClassification, Wav2Vec2FeatureExtractor
+
+def compute_metrics(actual_transitions, predicted_transitions, file_length):
+  reference = Timeline()
+  hypothesis = Timeline()
+  reference_annotaton = Annotation()
+  hypothesis_annotaton = Annotation()
+
+  prev_transition = actual_transitions[0]
+  frame_num, time, language = prev_transition.split(",")
+  for i in range(1, len(actual_transitions)):
+    prev_time = time
+    prev_language = language
+    frame_num, time, language = actual_transitions[i].split(",")
+    if prev_language != language:
+      reference.add(Segment(float(prev_time), float(time)))
+      reference_annotaton[Segment(float(prev_time), float(time))] = language
+  reference.add(Segment(float(time), float(file_length)))
+
+  prev_transition = predicted_transitions[0]
+  frame_num, time, language = prev_transition.split(",")
+  for i in range(1, len(predicted_transitions)):
+    prev_time = time
+    frame_num, time, language = predicted_transitions[i].split(",")
+    hypothesis.add(Segment(float(prev_time), float(time)))
+    hypothesis_annotaton[Segment(float(prev_time), float(time))] = language
+  hypothesis.add(Segment(float(time), float(file_length)))
+
+  precision2 = SegmentationPrecision(tolerance=2)
+  recall2 = SegmentationRecall(tolerance=2)
+  precision5 = SegmentationPrecision(tolerance=5)
+  recall5 = SegmentationRecall(tolerance=5)
+  precision10 = SegmentationPrecision(tolerance=10)
+  recall10 = SegmentationRecall(tolerance=10)
+  coverage = SegmentationCoverage()
+  purity = SegmentationPurity()
+
+  prec2 = precision2(reference, hypothesis)
+  rec2 = recall2(reference, hypothesis)
+  prec5 = precision5(reference, hypothesis)
+  rec5 = recall5(reference, hypothesis)
+  prec10 = precision10(reference, hypothesis)
+  rec10 = recall10(reference, hypothesis)
+  cov = coverage(reference_annotaton, hypothesis_annotaton)
+  pur = purity(reference_annotaton, hypothesis_annotaton)
+
+
+  print("Reference:")
+  print(reference)
+  print("Hypothesis:")
+  print(hypothesis)
+
+  print("Precision with tolerance = 2s")
+  print(prec2)
+  print("Precision with tolerance = 5s")
+  print(prec5)
+  print("Precision with tolerance = 10s")
+  print(prec10)
+
+  print("Recall with tolerance = 2s")
+  print(rec2)
+  print("Recall with tolerance = 5s")
+  print(rec5)
+  print("Recall with tolerance = 10s")
+  print(rec10)
+
+  print("Purity")
+  print(pur)
+
+  print("Coverage")
+  print(cov)
+
 
 if __name__ == "__main__":
   config_file = open("c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\segmentation_config4.json")
@@ -53,19 +126,32 @@ if __name__ == "__main__":
   samples_per_segment = segment_length * sampling_rate
   samples_per_hop = hop_time * sampling_rate
   log_softmax = nn.LogSoftmax(dim=1)
+
   if segment_length % hop_time != 0:
-    #print("Error, segment length should be a multiple of hop time")
+    print("Error, segment length should be a multiple of hop time")
     exit(1)
 
 
-  accuracies = []
   for filename in os.listdir(config["data_dir"]):
     print("#########################################")
     print(f"Segmenting {filename}")
     print("#########################################")
 
+    label_name = filename.split(".")
+    label_name = label_name[0]
+    label_name = label_name + ".txt"
+    label_filepath = os.path.join(config["labels_dir"], label_name)
+
+    f = open(label_filepath, "r")
+    actual_transitions = []
+    for line in f:
+      actual_transitions.append(line.strip())
+
+    print("actual transitions:")
+    print(actual_transitions)
+
     filepath = os.path.join(config["data_dir"], filename)
-    signal = librosa.load(filepath, sr=config["sampling_rate"], mono=True)[0]
+    signal = librosa.load(filepath, sr=sampling_rate, mono=True)[0]
 
     if len(signal) <= samples_per_segment:
       num_segments = 1
@@ -74,6 +160,7 @@ if __name__ == "__main__":
       if len(signal) % samples_per_hop:
         signal = np.pad(signal, (0, samples_per_hop - (len(signal) % samples_per_hop)))
 
+    file_length = len(signal)/sampling_rate
     num_segments = 1 + (len(signal) - samples_per_segment)//samples_per_hop
     all_predictions = torch.empty(num_segments, len(languages))
 
@@ -102,40 +189,14 @@ if __name__ == "__main__":
       all_predictions[i] = predictions
     # segmentation
     all_predictions = log_softmax(all_predictions)
-    language_sequence, segments_per_language, transitions = segmentation(all_predictions, languages, segment_length, hop_time, sampling_rate)
+    predicted_transitions = segmentation(all_predictions, languages, segment_length, hop_time, sampling_rate)
+    compute_metrics(actual_transitions, predicted_transitions, file_length)
 
-    #print output
-
-    print("-------------------------")
-    print("----Language Sequence----")
-    print("-------------------------")
-    for seg, pred in language_sequence.items():
-      print(f"{seg}: {pred}")
-
-    print("-------------------------")
-    print("--Segments Per Language--")
-    print("-------------------------")
-    segments_per_language_dict = {}
-    for i in range(0, len(languages)):
-      segments_per_language_dict[languages[i]] = segments_per_language[i]
-    print(segments_per_language_dict)
-
-    actual_lan = filename[0:2] # only works for the cleaned data
-    accuracy =  (100 *segments_per_language_dict[actual_lan])/num_segments
-    print(f"Accuracy = {accuracy}%")
-    accuracies.append(accuracy)
     print("-------------------------")
     print("-------Transitions-------")
     print("-------------------------")
-    if len(transitions) == 0:
+    if len(predicted_transitions) == 0:
       print("No language transitions occurred")
     else:
-      print(*transitions, sep="\n")
+      print(*predicted_transitions, sep="\n")
   config_file.close()
-
-  for a in accuracies:
-    print(round(a, 2))
-
-  avg_acc = sum(accuracies)/len(accuracies)
-
-  print(f"avg acc = {avg_acc}")

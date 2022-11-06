@@ -28,8 +28,6 @@ import torch
 
 def segmentation(all_predictions, languages, segment_length, hop_time, sr):
 
-  segments_per_language = np.zeros(len(languages))
-  language_sequence = {}
   transitions = []
   curr_language = 0
   prev_language = 0
@@ -65,7 +63,6 @@ def segmentation(all_predictions, languages, segment_length, hop_time, sr):
     addition = left + right
     linear_probs = torch.exp(addition)
     dp = sum(linear_probs)
-    print("{0:.10f}".format(dp.item()))
     if dp < threshold:
       # transition may have occured
       print("Below threshold")
@@ -81,11 +78,8 @@ def segmentation(all_predictions, languages, segment_length, hop_time, sr):
           time = segment_length + (i-1) * hop_time
           frame = time * sr
           transitions.append(f"{frame},{time},{languages[curr_language]}")
-
-    language_sequence[f"Segment {i}"] = languages[curr_language]
-    segments_per_language[curr_language] += 1
     prev_dp = dp
-  return language_sequence, segments_per_language, transitions
+  return transitions
 
 
 '''

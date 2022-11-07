@@ -1,8 +1,8 @@
 from pyannote.core import Timeline, Segment, Annotation
 from pyannote.metrics.segmentation import SegmentationPrecision, SegmentationCoverage, SegmentationPurity
 
-'''
 precision = SegmentationPrecision()
+'''
 reference = Timeline()
 hypothesis = Timeline()
 reference.add(Segment("0", "1.5"))
@@ -16,19 +16,18 @@ hypothesis.add(Segment(3, 4))
 print(reference)
 print(hypothesis)
 
-p = precision(reference, hypothesis)
 print(p)'''
 
 reference = Annotation()
 hypothesis = Annotation()
 
 reference[Segment(0, 1)] = "en"
-reference[Segment(1, 3)] = "fr"
+reference[Segment(1, 2)] = "fr"
+reference[Segment(2, 3)] = "fr"
+print(len(reference))
+print(len(hypothesis))
 
-hypothesis[Segment(0, 1)] = "en"
-hypothesis[Segment(1, 2)] = "fr"
-hypothesis[Segment(2, 3)] = "fr"
-
+p = precision(reference, hypothesis)
 coverage = SegmentationCoverage()
 cov = coverage(reference, hypothesis)
 

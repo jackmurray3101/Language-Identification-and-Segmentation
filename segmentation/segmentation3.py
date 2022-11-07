@@ -65,16 +65,12 @@ def segmentation(all_predictions, languages, segment_length, hop_time, sr):
     dp = sum(linear_probs)
     if dp < threshold:
       # transition may have occured
-      print("Below threshold")
-
       # if dp has started increasing again, than the last transition occured last time (i-1)
       if dp > prev_dp:
         prev_language = curr_language
         curr_language = right.argmax().item()
-        if curr_language == prev_language:
-          print("But no change")
-        else:
-          print("tranisiton occured")
+        if curr_language != prev_language:
+          #tranisiton occured"
           time = segment_length + (i-1) * hop_time
           frame = time * sr
           transitions.append(f"{frame},{time},{languages[curr_language]}")

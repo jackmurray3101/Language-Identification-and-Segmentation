@@ -5,16 +5,16 @@ import numpy as np
 import soundfile as sf
 
 ########
-class_num = 1
+class_num = 4
 num_files = 4
-lan1 = "en"
-lan2 = "es"
+lan1 = "el"
+lan2 = "nl"
 
 
-src1_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\cleaned_data\\{lan1}-male.wav"
-src2_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\cleaned_data\\{lan1}-female.wav"
-src3_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\cleaned_data\\{lan2}-male.wav"
-src4_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\cleaned_data\\{lan2}-female.wav"
+src1_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\cleaned_data\\lan_14\\{lan1}-male.wav"
+src2_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\cleaned_data\\lan_14\\{lan1}-female.wav"
+src3_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\cleaned_data\\lan_14\\{lan2}-male.wav"
+src4_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\cleaned_data\\lan_14\\{lan2}-female.wav"
 dst_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\multilingual_data\\class{class_num}\\{lan1}-{lan2}-{class_num}.wav"
 label_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\multilingual_data\\class{class_num}\\{lan1}-{lan2}-{class_num}.txt"
 sr = 16000
@@ -25,9 +25,12 @@ if class_num == 1:
 elif class_num == 2:
   min_time = 60
   max_time = 180
-else:
+elif class_num == 3:
   min_time = 180
   max_time = 240
+else:
+  min_time = 5
+  max_time = 20
 
 min_samples = min_time * sr
 max_samples = max_time * sr

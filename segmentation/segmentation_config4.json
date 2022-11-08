@@ -1,11 +1,11 @@
 {
   "sampling_rate": 16000,
-  "segment_length": 20,
+  "segment_length": 10,
   "hop_time": 2,
   "num_languages": 14,
-  "LID_system": "hu",
-  "data_dir": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\multilingual_data\\class2\\files",
-  "labels_dir": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\multilingual_data\\class2\\labels",
+  "LID_system": "sb",
+  "data_dir": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\multilingual_data\\class4\\files",
+  "labels_dir": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\multilingual_data\\class4\\labels",
   "plots_dir": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\plots",
   "model_extractor": "facebook/hubert-base-ls960",
   "hubert_model_path": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\saved_trained_models\\hubert\\Hubert-14lan-epoch20.pt",
@@ -13,7 +13,7 @@
   "speechbrain_model_path": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\saved_trained_models\\speechbrain",
   "edge_extension_duration": 10,
   "num_edge_extensions": 2,
-  "experiment_number": 48,
+  "experiment_number": 50,
   "class_number": 4,
   "languages":
   [

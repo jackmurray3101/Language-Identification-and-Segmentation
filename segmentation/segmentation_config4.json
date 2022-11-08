@@ -3,7 +3,7 @@
   "segment_length": 10,
   "hop_time": 2,
   "num_languages": 14,
-  "LID_system": "sb",
+  "LID_system": "hu",
   "data_dir": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\multilingual_data\\class4\\files",
   "labels_dir": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\multilingual_data\\class4\\labels",
   "plots_dir": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\plots",
@@ -13,7 +13,7 @@
   "speechbrain_model_path": "c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\saved_trained_models\\speechbrain",
   "edge_extension_duration": 10,
   "num_edge_extensions": 2,
-  "experiment_number": 50,
+  "experiment_number": 51,
   "class_number": 4,
   "languages":
   [

@@ -6,17 +6,19 @@ import soundfile as sf
 
 ########
 class_num = 4
-num_files = 4
-lan1 = "el"
-lan2 = "nl"
+num_files = 2
+lan1 = "en"
+lan2 = "es"
 
 
 src1_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\cleaned_data\\lan_14\\{lan1}-male.wav"
 src2_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\cleaned_data\\lan_14\\{lan1}-female.wav"
 src3_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\cleaned_data\\lan_14\\{lan2}-male.wav"
 src4_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\cleaned_data\\lan_14\\{lan2}-female.wav"
-dst_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\multilingual_data\\class{class_num}\\{lan1}-{lan2}-{class_num}.wav"
-label_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\multilingual_data\\class{class_num}\\{lan1}-{lan2}-{class_num}.txt"
+#dst_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\multilingual_data\\class{class_num}\\{lan1}-{lan2}-{class_num}.wav"
+#label_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\multilingual_data\\class{class_num}\\{lan1}-{lan2}-{class_num}.txt"
+dst_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\multilingual_data\\test_data\\files\\{lan1}-{lan2}-{class_num}.wav"
+label_filepath = f"c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\multilingual_data\\test_data\\labels\\{lan1}-{lan2}-{class_num}.txt"
 sr = 16000
 
 if class_num == 1:
@@ -30,7 +32,8 @@ elif class_num == 3:
   max_time = 240
 else:
   min_time = 5
-  max_time = 20
+  #max_time = 20
+  max_time = 50
 
 min_samples = min_time * sr
 max_samples = max_time * sr
@@ -40,9 +43,11 @@ signal2 = librosa.load(src2_filepath, sr=sr, mono=True)[0]
 signal3 = librosa.load(src3_filepath, sr=sr, mono=True)[0]
 signal4 = librosa.load(src4_filepath, sr=sr, mono=True)[0]
 
-signals = [signal1, signal2, signal3, signal4]
-labels = [lan1, lan1, lan2, lan2]
+#signals = [signal1, signal2, signal3, signal4]
+#labels = [lan1, lan1, lan2, lan2]
 
+signals = [signal2, signal3]
+labels = [lan1, lan2]
 ##############
 
 current_indexes = np.zeros(num_files, int)

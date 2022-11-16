@@ -9,7 +9,7 @@ import soundfile as sf
 import matplotlib.pyplot as plt
 from segmentation3 import segmentation
 from speechbrain.pretrained import EncoderClassifier
-from pyannote.core import Timeline, Segment, Annotation
+from pyannote.core import Timeline, Segment, Annotation, notebook
 from transformers import HubertForSequenceClassification, Wav2Vec2FeatureExtractor
 from pyannote.metrics.segmentation import SegmentationPrecision, SegmentationRecall, SegmentationPurity, SegmentationCoverage
 
@@ -27,7 +27,7 @@ from pyannote.metrics.segmentation import SegmentationPrecision, SegmentationRec
 #   purity,
 #   coverage
 # ]
-def compute_metrics(all_actual_transitions, predicted_transitions, file_length, sampling_rate, samples_per_segment, samples_per_hop):
+def compute_metrics(all_actual_transitions, predicted_transitions, file_length, sampling_rate, samples_per_segment, samples_per_hop, plots_dir, exp_num, pure_filename):
   file_duration = file_length/sampling_rate
   metrics = []
   # labels in dataset contain transitions between speakers of the same language
@@ -111,13 +111,11 @@ def compute_metrics(all_actual_transitions, predicted_transitions, file_length, 
         num_correct += 1
 
   segment_accuracy = 100 * num_correct/num_segments 
-
   # Calculate Precision and Recall, Coverage and Purity
   reference = Timeline()
   hypothesis = Timeline()
-  reference_annotaton = Annotation()
-  hypothesis_annotaton = Annotation()
-  
+  reference_annotation = Annotation()
+  hypothesis_annotation = Annotation()
   prev_transition = actual_transitions[0]
   frame_num, time, language = prev_transition.split(",")
   for i in range(1, len(actual_transitions)):
@@ -125,20 +123,50 @@ def compute_metrics(all_actual_transitions, predicted_transitions, file_length, 
     prev_language = language
     frame_num, time, language = actual_transitions[i].split(",")
     reference.add(Segment(float(prev_time), float(time)))
-    reference_annotaton[Segment(float(prev_time), float(time))] = language
+    reference_annotation[Segment(float(prev_time), float(time))] = prev_language
   reference.add(Segment(float(time), float(file_duration)))
-  reference_annotaton[Segment(float(time), float(file_duration))] = language
+  reference_annotation[Segment(float(time), float(file_duration))] = language
 
   prev_transition = predicted_transitions[0]
   frame_num, time, language = prev_transition.split(",")
   for i in range(1, len(predicted_transitions)):
     prev_time = time
+    prev_language = language
     frame_num, time, language = predicted_transitions[i].split(",")
     hypothesis.add(Segment(float(prev_time), float(time)))
-    hypothesis_annotaton[Segment(float(prev_time), float(time))] = language
+    hypothesis_annotation[Segment(float(prev_time), float(time))] = prev_language
   hypothesis.add(Segment(float(time), float(file_duration)))
-  hypothesis_annotaton[Segment(float(time), float(file_duration))] = language
+  hypothesis_annotation[Segment(float(time), float(file_duration))] = language
 
+  #################################
+  plots_dir = os.path.join(plots_dir, f"exp{exp_num}")
+  try:
+    os.mkdir(plots_dir)
+  except:
+    pass
+  plot_name = f"exp{exp_num}_{pure_filename}_timeline"
+  plot_path = os.path.join(plots_dir, plot_name)
+  notebook.width = 10
+  fig = plt.figure(figsize = (10, 5))
+  plt.rcParams['figure.figsize'] = (notebook.width, 3)
+
+  # only display [0, 20] timerange
+  notebook.crop = Segment(0, 900)
+
+  # plot reference
+  #plt.subplot(211)
+  notebook.plot_annotation(reference_annotation, legend=True, time=True)
+  plt.gca().text(0.6, 0.15, 'reference', fontsize=16)
+  red_plotname = f"{plot_path}_ref"
+  plt.savefig(red_plotname, dpi=250)
+  fig = plt.figure(figsize = (10, 5))
+  # plot hypothesis
+  #plt.subplot(212)
+  notebook.plot_annotation(hypothesis_annotation, legend=True, time=True)
+  plt.gca().text(0.6, 0.15, 'hypothesis with HuBERT LID system', fontsize=16)
+  hyp_plotname = f"{plot_path}_hyp"
+  plt.savefig(hyp_plotname, dpi=250)
+  #################################
   precision2 = SegmentationPrecision(tolerance=2)
   recall2 = SegmentationRecall(tolerance=2)
   precision5 = SegmentationPrecision(tolerance=5)
@@ -154,8 +182,8 @@ def compute_metrics(all_actual_transitions, predicted_transitions, file_length, 
   rec5 = 100 * recall5(reference, hypothesis)
   prec10 = 100 * precision10(reference, hypothesis)
   rec10 = 100 * recall10(reference, hypothesis)
-  cov = 100 * coverage(reference_annotaton, hypothesis_annotaton)
-  pur = 100 * purity(reference_annotaton, hypothesis_annotaton)
+  cov = 100 * coverage(reference_annotation, hypothesis_annotation)
+  pur = 100 * purity(reference_annotation, hypothesis_annotation)
 
   metrics.append(frame_accuracy)
   metrics.append(segment_accuracy)
@@ -201,8 +229,10 @@ def plot_results(results, plots_dir, exp_num, class_num):
 
   # plots
   plots_dir = os.path.join(plots_dir, f"exp{exp_num}")
-  os.mkdir(plots_dir)
-
+  try:
+    os.mkdir(plots_dir)
+  except:
+    pass
   # Frame accuracy
   fig = plt.figure(figsize = (10, 5))
   fig = plt.figure(figsize = (10, 5))
@@ -332,7 +362,7 @@ def plot_results(results, plots_dir, exp_num, class_num):
 
 
 if __name__ == "__main__":
-  config_file = open("c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\segmentation_config4.json")
+  config_file = open("c:\\Users\\Jack\\Desktop\\Thesis\\code\\segmentation\\segmentation_config2.json")
   config = json.load(config_file)
 
   device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -399,7 +429,6 @@ if __name__ == "__main__":
     for line in f:
       actual_transitions.append(line.strip())
     f.close()
-    
     filepath = os.path.join(config["data_dir"], filename)
     signal = librosa.load(filepath, sr=sampling_rate, mono=True)[0]
 
@@ -474,7 +503,7 @@ if __name__ == "__main__":
       if int(frame) >= 0 and int(frame) < original_file_length:
         predicted_transitions.append(f"{frame},{time},{language}")
 
-    metrics = compute_metrics(actual_transitions, predicted_transitions, original_file_length, sampling_rate, samples_per_segment, samples_per_hop)
+    metrics = compute_metrics(actual_transitions, predicted_transitions, original_file_length, sampling_rate, samples_per_segment, samples_per_hop, plots_dir, exp_num, pure_filename)
     results[pure_filename] = metrics
   config_file.close()
 

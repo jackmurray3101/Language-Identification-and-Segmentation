@@ -8,7 +8,18 @@ from speechbrain.pretrained import EncoderClassifier
 if __name__ == "__main__":
   test_data_dir = os.path.join("..", "datasets", "voxlingua107_test")
   device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-  languages = os.listdir(test_data_dir)
+  #languages = os.listdir(test_data_dir)
+  #languages = ["en", "es", "ko"]
+  languages =  [
+    "en",
+    "de",
+    "es",
+    "fr",
+    "ko",
+    "zh",
+    "sv",
+    "no"
+  ]
 
   try:
     languages.remove("labels.txt")
@@ -38,6 +49,7 @@ if __name__ == "__main__":
       ####################################################
       signal_path = os.path.join(path, file_name)
       signal = language_id.load_audio(signal_path)
+      signal = signal[0:6*16000]
       prediction = language_id.classify_batch(signal)
       code = prediction[3] # e.g. code = ['en: English']
       code = code[0].split(':')

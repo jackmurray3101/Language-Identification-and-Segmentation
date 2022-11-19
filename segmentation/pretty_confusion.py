@@ -6,8 +6,8 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 
 
-lan = "8"
-model = "wav2vec2-base-SID"
+lan = "3s"
+model = "hubert-base-sid"
 
 if lan == "14":
   labels = ["da", "de", "el", "en", "es", "fr", "it", "ja", "ko", "nl", "no", "pt", "sv", "zh"]

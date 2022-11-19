@@ -14,12 +14,13 @@ gadi_scripts/completed_jobs
 stage4/completed_jobs
 stage4/failed_jobs
 stage5/completed_jobs
-segmentation/data/*
+segmentation/data/
 stage*/completed_jobs
 segmentation/saved_trained_models/*
 segmentation/tmp_data/*
 segmentation/cleaned_data/da-female.wav segmentation/cleaned_data/da-male.wav segmentation/cleaned_data/de-female.wav segmentation/cleaned_data/de-male.wav segmentation/cleaned_data/el-female.wav segmentation/cleaned_data/el-male.wav segmentation/cleaned_data/en-female.wav segmentation/cleaned_data/en-male.wav segmentation/cleaned_data/es-female.wav segmentation/cleaned_data/es-male.wav segmentation/cleaned_data/fr-female.wav segmentation/cleaned_data/fr-male.wav segmentation/cleaned_data/it-female.wav segmentation/cleaned_data/it-male.wav segmentation/cleaned_data/ja-female.wav segmentation/cleaned_data/ja-male.wav segmentation/cleaned_data/ko-female.wav segmentation/cleaned_data/ko-male.wav segmentation/cleaned_data/nl-female.wav segmentation/cleaned_data/nl-male.wav segmentation/cleaned_data/no-female.wav segmentation/cleaned_data/no-male.wav segmentation/cleaned_data/pt-female.wav segmentation/cleaned_data/pt-male.wav segmentation/cleaned_data/sv-female.wav segmentation/cleaned_data/sv-male.wav segmentation/cleaned_data/zh-female.wav segmentation/cleaned_data/zh-male.wav
 segmentation/cleaned_data
 segmentation/longer_data
-segmentation/seg_output_files
 segmentation/multilingual_data
+plots
+testing/

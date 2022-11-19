@@ -24,3 +24,8 @@ segmentation/longer_data
 segmentation/multilingual_data
 plots
 testing/
+**/__pycache__
+benchmark/tmp
+benchmark/.vscodesegmentation/seg_output_files
+segmentation/plots
+__pycache__/

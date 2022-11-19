@@ -1,3 +1,7 @@
+'''
+  Conduct benchmark LID testing using speechbrain system
+'''
+
 import torch
 import torchaudio
 import os

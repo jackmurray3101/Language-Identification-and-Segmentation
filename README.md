@@ -2,10 +2,10 @@
 This codebase provides an implementation for a language segmentation system, implemented using self-supervised speech representation frameworks.
 
 Frameworks used include:
- -wav2vec2
- -HuBERT
- -data2vec
- -XLSR
+ - wav2vec2
+ - HuBERT
+ - data2vec
+ - XLSR
 
 The frameworks were compared for LID on VoxLingua107, against a benchmark system https://huggingface.co/speechbrain/lang-id-voxlingua107-ecapa.
 The structure used should also enable future models to be compared easily in the future - see the LID folder.

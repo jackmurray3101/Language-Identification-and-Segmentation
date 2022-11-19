@@ -1,3 +1,7 @@
+'''
+  Script to plot training/validation accuracy curves post training
+'''
+
 import sys
 import re
 import numpy as np

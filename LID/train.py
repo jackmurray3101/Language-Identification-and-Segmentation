@@ -1,4 +1,8 @@
-import os
+'''
+  Main training script for SSL model. Validation and
+  testing are also performed here.
+'''
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -62,7 +66,6 @@ def test_network(model, testloader, num_languages, languages):
   model_accuracy = (total_test_correct / total_test_signals) * 100
   print("Test set size: {0}, Test accuracy {1:.2f}%".format(total_test_signals, model_accuracy))
   model.train()
-
 
 if __name__ == "__main__":
   device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")

@@ -1,3 +1,8 @@
+'''
+  Given text files with output training data from multiple models, plot
+  the training/validation curves on the same graph for comparison
+'''
+
 import sys
 import re
 import os

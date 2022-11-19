@@ -1,3 +1,7 @@
+'''
+  Apply pre-processing to input, to normalise and truncate/pad to fixed length
+'''
+
 from transformers import Wav2Vec2FeatureExtractor
 
 class Transform:

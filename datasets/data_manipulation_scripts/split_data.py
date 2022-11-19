@@ -1,5 +1,5 @@
 '''
-  obtain a random subsets of each of the input sets
+  Create a training, validation and test susbet of the input dataset by randomly sampling
 '''
 import os
 from random import sample

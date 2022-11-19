@@ -1,0 +1,15 @@
+
+======================================================================================
+                  Resource Usage on 2022-10-03 18:42:40:
+   Job Id:             59474293.gadi-pbs
+   Project:            wa66
+   Exit Status:        0
+   Service Units:      39.93
+   NCPUs Requested:    12                     NCPUs Used: 12              
+                                           CPU Time Used: 01:20:49        
+   Memory Requested:   16.0GB                Memory Used: 5.36GB          
+   NGPUs Requested:    1                 GPU Utilisation: 95%             
+                                         GPU Memory Used: 11.55GB         
+   Walltime requested: 08:00:00            Walltime Used: 01:06:33        
+   JobFS requested:    10.0GB                 JobFS used: 0B              
+======================================================================================

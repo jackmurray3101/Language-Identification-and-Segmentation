@@ -1,3 +1,7 @@
+'''
+  Generate a list of language labels for files, based on the directory they are in
+'''
+
 import os
 
 dirs = [

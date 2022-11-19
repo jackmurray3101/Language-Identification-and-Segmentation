@@ -1,0 +1,11 @@
+Loading python3/3.9.2
+  Loading requirement: intel-mkl/2020.3.304
+You are using a model of type hubert to instantiate a model of type data2vec-audio. This is not supported for all configurations of models and can yield errors.
+Traceback (most recent call last):
+  File "/home/561/jm2369/thesis/stage6/train.py", line 96, in <module>
+    model =Data2VecAudioForSequenceClassification.from_pretrained(config["model_path"])
+  File "/home/561/jm2369/.local/lib/python3.9/site-packages/transformers/modeling_utils.py", line 2162, in from_pretrained
+    model, missing_keys, unexpected_keys, mismatched_keys, error_msgs = cls._load_pretrained_model(
+  File "/home/561/jm2369/.local/lib/python3.9/site-packages/transformers/modeling_utils.py", line 2299, in _load_pretrained_model
+    raise ValueError(
+ValueError: The state dictionary of the model you are trying to load is corrupted. Are you sure it was properly saved?

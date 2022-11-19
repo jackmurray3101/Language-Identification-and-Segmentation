@@ -1,10 +1,15 @@
-import math
+'''
+  Splice together input files in different languages to create a manufactured, multilingual dataset
+  Set class number to adjust how often transitions occur.
+
+'''
+
 import random
 import librosa
 import numpy as np
 import soundfile as sf
 
-########
+
 class_num = 4
 num_files = 6
 lan1 = "en"
@@ -48,7 +53,6 @@ signal6 = librosa.load(src6_filepath, sr=sr, mono=True)[0]
 signals = [signal1, signal2, signal3, signal4, signal5, signal6]
 labels = [lan1, lan1, lan2, lan2, lan3, lan3]
 
-##############
 
 current_indexes = np.zeros(num_files, int)
 multilingual_speech = []

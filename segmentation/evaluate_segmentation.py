@@ -1,3 +1,8 @@
+'''
+  Evaluates the provided segmentaion system.
+  Select appropriate config file and segmentation system in imports
+'''
+
 import os
 import json
 import math
@@ -138,7 +143,6 @@ def compute_metrics(all_actual_transitions, predicted_transitions, file_length, 
   hypothesis.add(Segment(float(time), float(file_duration)))
   hypothesis_annotation[Segment(float(time), float(file_duration))] = language
 
-  #################################
   plots_dir = os.path.join(plots_dir, f"exp{exp_num}")
   try:
     os.mkdir(plots_dir)
@@ -150,23 +154,19 @@ def compute_metrics(all_actual_transitions, predicted_transitions, file_length, 
   fig = plt.figure(figsize = (10, 5))
   plt.rcParams['figure.figsize'] = (notebook.width, 3)
 
-  # only display [0, 20] timerange
   notebook.crop = Segment(0, 900)
 
   # plot reference
-  #plt.subplot(211)
   notebook.plot_annotation(reference_annotation, legend=True, time=True)
   plt.gca().text(0.6, 0.15, 'reference', fontsize=16)
   red_plotname = f"{plot_path}_ref"
   plt.savefig(red_plotname, dpi=250)
   fig = plt.figure(figsize = (10, 5))
-  # plot hypothesis
-  #plt.subplot(212)
   notebook.plot_annotation(hypothesis_annotation, legend=True, time=True)
   plt.gca().text(0.6, 0.15, 'hypothesis with HuBERT LID system', fontsize=16)
   hyp_plotname = f"{plot_path}_hyp"
   plt.savefig(hyp_plotname, dpi=250)
-  #################################
+
   precision2 = SegmentationPrecision(tolerance=2)
   recall2 = SegmentationRecall(tolerance=2)
   precision5 = SegmentationPrecision(tolerance=5)
